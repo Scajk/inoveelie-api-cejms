@@ -1,4 +1,4 @@
-package br.com.ifpe.inoveelie_api_cejms;
+package br.com.ifpe.inoveelie;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
