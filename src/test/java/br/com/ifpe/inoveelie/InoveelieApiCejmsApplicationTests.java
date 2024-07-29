@@ -1,4 +1,4 @@
-package br.com.ifpe.inoveelie_api_cejms;
+package br.com.ifpe.inoveelie;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
