@@ -1,4 +1,4 @@
-package br.com.ifpe.inoveelie.api.medida;
+package br.com.ifpe.inoveelie.api.cliente;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,47 +13,47 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.ifpe.inoveelie.modelo.medida.Medida;
-import br.com.ifpe.inoveelie.modelo.medida.MedidaService;
+import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
+import br.com.ifpe.inoveelie.modelo.cliente.ClienteService;
 
 @RestController
-@RequestMapping("/api/medida")
+@RequestMapping("/api/cliente")
 @CrossOrigin
 
-public class MedidaController {
-
+public class ClienteController {
+    
     @Autowired
-    private MedidaService medidaService;
+    private ClienteService clienteService;
 
     @PostMapping
-    public ResponseEntity<Medida> save(@RequestBody MedidaRequest request) {
+    public ResponseEntity<Cliente> save(@RequestBody ClienteRequest request) {
 
-        Medida medida = medidaService.save(request.build());
-        return new ResponseEntity<Medida>(medida, HttpStatus.CREATED);
+        Cliente cliente = clienteService.save(request.build());
+        return new ResponseEntity<Cliente>(cliente, HttpStatus.CREATED);
 
     }
 
     @GetMapping
-    public List<Medida> listarTodos() {
-        return medidaService.listarTodos();
+    public List<Cliente> listarTodos() {
+        return clienteService.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public Medida obterPorID(@PathVariable Long id) {
-        return medidaService.obterPorID(id);
+    public Cliente obterPorID(@PathVariable Long id) {
+        return clienteService.obterPorID(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Medida> update(@PathVariable("id") Long id, @RequestBody MedidaRequest request) {
+    public ResponseEntity<Cliente> update(@PathVariable("id") Long id, @RequestBody ClienteRequest request) {
 
-        medidaService.update(id, request.build());
+        clienteService.update(id, request.build());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
-        medidaService.delete(id);
+        clienteService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

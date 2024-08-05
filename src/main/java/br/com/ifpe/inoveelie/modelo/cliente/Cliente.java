@@ -1,4 +1,4 @@
-package br.com.ifpe.inoveelie.modelo.medida;
+package br.com.ifpe.inoveelie.modelo.cliente;
 
 import org.hibernate.annotations.SQLRestriction;
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Medida")
+@Table(name = "Cliente")
 @SQLRestriction("habilitado = true")
 @Builder
 @Getter
@@ -20,26 +20,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class Medida extends EntidadeAuditavel{
+public class Cliente extends EntidadeAuditavel{
+    
+   @Column
+   private String nomeCliente;
 
    @Column
-   private Double busto;
-
-   @Column
-   private Double cintura;
-
-   @Column
-   private Double quadril;
-
-   @Column
-   private Double alturaManga;
-
-   @Column
-   private Double alturaCava;
-
-   @Column
-   private Double largura;
-
-   @Column
-   private Double comprimentoSaia;
+   private String numeroCliente;
 }
