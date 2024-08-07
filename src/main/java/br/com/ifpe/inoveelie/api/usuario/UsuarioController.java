@@ -6,15 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import br.com.ifpe.inoveelie.modelo.usuario.UsuarioService;
+import br.com.ifpe.inoveelie.modelo.usuario.Empresa;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
@@ -55,4 +58,51 @@ public class UsuarioController {
 
         return usuarioService.obterPorID(id);
     }
+
+    @Operation(
+        summary = "Serviço responsável por alterar um cliente no sistema."
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> update(@PathVariable("id") Long id, 
+            @RequestBody @Valid UsuarioRequest request) {
+
+        usuarioService.update(id, request.build());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+        usuarioService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @PostMapping("/empresa/{usuarioId}")
+   public ResponseEntity<Empresa> adicionarEmpresa(@PathVariable("usuarioId") Long empresaId, @RequestBody @Valid EmpresaRequest request) {
+
+    Empresa cnpj = usuarioService.adicionarEmpresa(empresaId, request.build());
+       return new ResponseEntity<Empresa>(cnpj, HttpStatus.CREATED);
+   }
+
+   @PutMapping("/empresa/{cnpjId}")
+   public ResponseEntity<Empresa> atualizarEmpresa(@PathVariable("cnpjId") Long cnpjId, @RequestBody EmpresaRequest request) {
+
+    Empresa cnpj = usuarioService.atualizarEmpresa(cnpjId, request.build());
+       return new ResponseEntity<Empresa>(cnpj, HttpStatus.OK);
+   }
+  
+   @DeleteMapping("/empresa/{cnpjId}")
+   public ResponseEntity<Void> removerEnderecoCliente(@PathVariable("cnpjId") Long cnpjId) {
+
+    usuarioService.removerEmpresa(cnpjId);
+       return ResponseEntity.noContent().build();
+   }
+
 }

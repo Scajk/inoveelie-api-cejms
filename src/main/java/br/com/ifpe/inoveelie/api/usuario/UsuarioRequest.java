@@ -1,9 +1,11 @@
 package br.com.ifpe.inoveelie.api.usuario;
 
-import org.hibernate.validator.constraints.Length;
+import java.util.Arrays;
 
+import br.com.ifpe.inoveelie.modelo.acesso.User;
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,27 +19,42 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UsuarioRequest {
 
-    //@NotBlank -> Válida se o campo está nulo ou vazio.
-    @NotNull(message = "O E-mail é de preenchimento obrigatório")
-    @NotEmpty(message = "O E-mail é de preenchimento obrigatório")
-    @Length(max = 50, message = "O E-mail deverá ter no máximo 50 caracteres")
+    @NotBlank(message = "O e-mail é de preenchimento obrigatório")
     @Email
     private String email;
 
-    @NotNull(message = "O CPF é de preenchimento obrigatório")
-    @NotEmpty(message = "O CPF é de preenchimento obrigatório")
-    @Length(min = 6, message = "O campo Senha tem que ter no mínimo 6 caracteres")
-    private String senha;
+    @NotBlank(message = "A senha é de preenchimento obrigatório")
+    private String password;
 
-    @Length(min = 6, message = "O campo Confirmar Senha tem que ter no mínimo 6 caracteres")
-    private String confirmaSenha;
+    //@NotBlank -> Válida se o campo está nulo ou vazio.
+    @NotNull(message = "O E-mail é de preenchimento obrigatório")
+    @NotEmpty(message = "O E-mail é de preenchimento obrigatório")
+    private String nome;
+
+    private String sobrenome;
+
+    @NotNull(message = "O E-mail é de preenchimento obrigatório")
+    @NotEmpty(message = "O E-mail é de preenchimento obrigatório")
+    private String foneCelular;
+    
+
+    public User buildUser() {
+
+       return User.builder()
+           .username(email)
+           .password(password)
+           .roles(Arrays.asList(User.ROLE_USUARIO))
+           .build();
+   }
 
     public Usuario build() {
 
         Usuario c = Usuario.builder()
+            .user(buildUser())
+            .nome(nome)
             .email(email)
-            .senha(senha)
-            .confirmaSenha(confirmaSenha)
+            .sobrenome(sobrenome)    
+            .foneCelular(foneCelular)
             .build();
 
         return c;
