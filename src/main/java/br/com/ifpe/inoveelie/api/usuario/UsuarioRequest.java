@@ -2,7 +2,6 @@ package br.com.ifpe.inoveelie.api.usuario;
 
 import java.util.Arrays;
 
-import br.com.ifpe.inoveelie.modelo.acesso.User;
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,10 +22,10 @@ public class UsuarioRequest {
     @Email
     private String email;
 
-    @NotBlank(message = "A senha é de preenchimento obrigatório")
+    // @NotBlank(message = "A senha é de preenchimento obrigatório")
     private String password;
 
-    //@NotBlank -> Válida se o campo está nulo ou vazio.
+    // @NotBlank -> Válida se o campo está nulo ou vazio.
     @NotNull(message = "O E-mail é de preenchimento obrigatório")
     @NotEmpty(message = "O E-mail é de preenchimento obrigatório")
     private String nome;
@@ -36,26 +35,18 @@ public class UsuarioRequest {
     @NotNull(message = "O E-mail é de preenchimento obrigatório")
     @NotEmpty(message = "O E-mail é de preenchimento obrigatório")
     private String foneCelular;
-    
-
-    public User buildUser() {
-
-       return User.builder()
-           .username(email)
-           .password(password)
-           .roles(Arrays.asList(User.ROLE_USUARIO))
-           .build();
-   }
 
     public Usuario build() {
 
         Usuario c = Usuario.builder()
-            .user(buildUser())
-            .nome(nome)
-            .email(email)
-            .sobrenome(sobrenome)    
-            .foneCelular(foneCelular)
-            .build();
+                .username(email)
+                .password(password)
+                .roles(Arrays.asList(Usuario.ROLE_USUARIO))
+                .nome(nome)
+                .email(email)
+                .sobrenome(sobrenome)
+                .foneCelular(foneCelular)
+                .build();
 
         return c;
     }

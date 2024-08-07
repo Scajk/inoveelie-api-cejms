@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import br.com.ifpe.inoveelie.modelo.acesso.User;
-import br.com.ifpe.inoveelie.modelo.acesso.UserService;
 import br.com.ifpe.inoveelie.modelo.seguranca.JwtService;
+import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
+import br.com.ifpe.inoveelie.modelo.usuario.UsuarioService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,9 +19,9 @@ public class AuthenticationController {
 
     private final JwtService jwtService;
     
-    private UserService userService;
+    private UsuarioService userService;
 
-    public AuthenticationController(JwtService jwtService, UserService userService) {
+    public AuthenticationController(JwtService jwtService, UsuarioService userService) {
 
         this.jwtService = jwtService;
         this.userService = userService;
@@ -31,7 +30,7 @@ public class AuthenticationController {
     @PostMapping
     public Map<Object, Object> signin(@RequestBody AuthenticationRequest data) {
     
-        User authenticatedUser = userService.authenticate(data.getUsername(), data.getPassword());
+        Usuario authenticatedUser = userService.authenticate(data.getUsername(), data.getPassword());
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
 

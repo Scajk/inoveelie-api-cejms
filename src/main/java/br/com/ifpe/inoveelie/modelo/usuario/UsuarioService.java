@@ -5,46 +5,57 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.ifpe.inoveelie.modelo.acesso.UserService;
 import br.com.ifpe.inoveelie.modelo.mensagens.EmailService;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private EmailService emailService;
 
-    
     @Autowired
     private UsuarioRepository repository;
 
     @Autowired
     private EmpresaRepository empresaRepository;
 
-    @Autowired
-    private UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
+    private final AuthenticationManager authenticationManager;
+
+    public UsuarioService(UsuarioRepository usRepository, AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder) {
+
+        this.authenticationManager = authenticationManager;
+        this.repository = usRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     public Usuario save(Usuario usuario) {
 
-        userService.save(usuario.getUser());
-
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setHabilitado(Boolean.TRUE);
         usuario.setVersao(1L);
         usuario.setDataCriacao(LocalDate.now());
         Usuario usuarioSalvo = repository.save(usuario);
 
-        emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
+        // emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
 
         return usuarioSalvo;
     }
 
     public List<Usuario> listarTodos() {
-  
+
         return repository.findAll();
     }
 
@@ -60,7 +71,7 @@ public class UsuarioService {
         usuario.setNome(usuarioAlterado.getNome());
         usuario.setSobrenome(usuarioAlterado.getSobrenome());
         usuario.setFoneCelular(usuarioAlterado.getFoneCelular());
-            
+
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
     }
@@ -76,63 +87,84 @@ public class UsuarioService {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
+    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
+    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
+    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
+    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Transactional
-   public Empresa adicionarEmpresa(Long usuarioId, Empresa cnpj) {
+    public Empresa adicionarEmpresa(Long usuarioId, Empresa cnpj) {
 
-       Usuario usuario = this.obterPorID(usuarioId);
-      
-       //Primeiro salva o EnderecoCliente:
+        Usuario usuario = this.obterPorID(usuarioId);
 
-       cnpj.setUsuario(usuario);
-       cnpj.setHabilitado(Boolean.TRUE);
-       empresaRepository.save(cnpj);
-      
-       //Depois acrescenta o endereço criado ao cliente e atualiza o cliente:
+        // Primeiro salva o EnderecoCliente:
 
-       List<Empresa> listaEmpresa = usuario.getCnpj();
-      
-       if (listaEmpresa == null) {
-        listaEmpresa = new ArrayList<Empresa>();
-       }
-      
-       listaEmpresa.add(cnpj);
-       usuario.setCnpj(listaEmpresa);
-       usuario.setVersao(usuario.getVersao() + 1);
-       repository.save(usuario);
-      
-       return cnpj;
-   }
+        cnpj.setUsuario(usuario);
+        cnpj.setHabilitado(Boolean.TRUE);
+        empresaRepository.save(cnpj);
 
-   @Transactional
-   public Empresa atualizarEmpresa(Long id, Empresa cnpjAlterado) {
+        // Depois acrescenta o endereço criado ao cliente e atualiza o cliente:
 
-    Empresa cnpj = empresaRepository.findById(id).get();
-    cnpj.setNomeEmpresa(cnpjAlterado.getNomeEmpresa());
-    cnpj.setCepEmpresa(cnpjAlterado.getCepEmpresa());
+        List<Empresa> listaEmpresa = usuario.getEmpresas();
 
-       return empresaRepository.save(cnpj);
-   }
+        if (listaEmpresa == null) {
+            listaEmpresa = new ArrayList<Empresa>();
+        }
 
-   @Transactional
+        listaEmpresa.add(cnpj);
+        usuario.setEmpresas(listaEmpresa);
+        usuario.setVersao(usuario.getVersao() + 1);
+        repository.save(usuario);
+
+        return cnpj;
+    }
+
+    @Transactional
+    public Empresa atualizarEmpresa(Long id, Empresa cnpjAlterado) {
+
+        Empresa cnpj = empresaRepository.findById(id).get();
+        cnpj.setNomeEmpresa(cnpjAlterado.getNomeEmpresa());
+        cnpj.setCepEmpresa(cnpjAlterado.getCepEmpresa());
+
+        return empresaRepository.save(cnpj);
+    }
+
+    @Transactional
     public void removerEmpresa(Long id) {
 
         Empresa cnpj = empresaRepository.findById(id).get();
         cnpj.setHabilitado(Boolean.FALSE);
-    empresaRepository.save(cnpj);
+        empresaRepository.save(cnpj);
 
-    Usuario usuario = this.obterPorID(cnpj.getUsuario().getId());
-    usuario.getCnpj().remove(cnpj);
-    usuario.setVersao(usuario.getVersao() + 1);
-    repository.save(usuario);
-}
+        Usuario usuario = this.obterPorID(cnpj.getUsuario().getId());
+        usuario.getEmpresas().remove(cnpj);
+        usuario.setVersao(usuario.getVersao() + 1);
+        repository.save(usuario);
+    }
 
+    public Usuario authenticate(String username, String password) {
 
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
 
+        return repository.findByUsername(username).orElseThrow();
+    }
+
+    @Transactional
+    public Usuario findByUsername(String username) {
+
+        return repository.findByUsername(username).get();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        return repository.findByUsername(username).get();
+    }
 
 }
