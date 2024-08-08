@@ -22,7 +22,7 @@ public class UsuarioRequest {
     @Email
     private String email;
 
-    // @NotBlank(message = "A senha é de preenchimento obrigatório")
+    @NotBlank(message = "A senha é de preenchimento obrigatório")
     private String password;
 
     // @NotBlank -> Válida se o campo está nulo ou vazio.
