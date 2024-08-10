@@ -2,7 +2,6 @@ package br.com.ifpe.inoveelie.modelo.mensagens;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -13,7 +12,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
