@@ -30,7 +30,6 @@ public class PedidoService {
        pedido.setStatusPedidos(pedidoAlterado.getStatusPedidos());
        pedido.setUsuarios(pedidoAlterado.getUsuarios());
        pedido.setMedidas(pedidoAlterado.getMedidas());
-       pedido.setDescricao(pedidoAlterado.getDescricao());
        pedido.setDataEntrega(pedidoAlterado.getDataEntrega());
        pedido.setTipoPedido(pedidoAlterado.getTipoPedido());
          

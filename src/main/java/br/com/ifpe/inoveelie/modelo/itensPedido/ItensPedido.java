@@ -2,7 +2,7 @@ package br.com.ifpe.inoveelie.modelo.itensPedido;
 
 import org.hibernate.annotations.SQLRestriction;
 import br.com.ifpe.inoveelie.modelo.material.Material;
-//import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
+import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

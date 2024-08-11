@@ -1,5 +1,6 @@
 package br.com.ifpe.inoveelie.modelo.pedido;
 
+import java.time.LocalDate;
 import org.hibernate.annotations.SQLRestriction;
 import br.com.ifpe.inoveelie.modelo.material.Material;
 import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
@@ -45,6 +46,12 @@ public class Pedido extends EntidadeAuditavel{
 
    @Column
    private Double qtd;
+
+   @Column
+   private LocalDate dataEntrega;
+
+   @Column
+   private String tipoPedido;
 
    @Column
    private Float valor;
