@@ -29,8 +29,9 @@ public class UsuarioService implements UserDetailsService {
     private EmpresaRepository empresaRepository;
 
     private final PasswordEncoder passwordEncoder;
-
+    
     private final AuthenticationManager authenticationManager;
+
 
     public UsuarioService(UsuarioRepository usRepository, AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder) {
@@ -40,8 +41,17 @@ public class UsuarioService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public class SenhasNaoConferemException extends RuntimeException {
+        public SenhasNaoConferemException(String message) {
+            super(message);
+        }
+    }
+
     @Transactional
     public Usuario save(Usuario usuario) {
+        if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
+            throw new SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas.");
+        }
 
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setHabilitado(Boolean.TRUE);
@@ -98,15 +108,15 @@ public class UsuarioService implements UserDetailsService {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Transactional
-    public Empresa adicionarEmpresa(Long usuarioId, Empresa cnpj) {
+    public Empresa adicionarEmpresa(Long usuarioId, Empresa empresas) {
 
         Usuario usuario = this.obterPorID(usuarioId);
 
         // Primeiro salva o EnderecoCliente:
 
-        cnpj.setUsuario(usuario);
-        cnpj.setHabilitado(Boolean.TRUE);
-        empresaRepository.save(cnpj);
+        empresas.setUsuario(usuario);
+        empresas.setHabilitado(Boolean.TRUE);
+        empresaRepository.save(empresas);
 
         // Depois acrescenta o endereço criado ao cliente e atualiza o cliente:
 
@@ -116,33 +126,33 @@ public class UsuarioService implements UserDetailsService {
             listaEmpresa = new ArrayList<Empresa>();
         }
 
-        listaEmpresa.add(cnpj);
+        listaEmpresa.add(empresas);
         usuario.setEmpresas(listaEmpresa);
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
 
-        return cnpj;
+        return empresas;
     }
 
     @Transactional
-    public Empresa atualizarEmpresa(Long id, Empresa cnpjAlterado) {
+    public Empresa atualizarEmpresa(Long id, Empresa empresasAlterado) {
 
-        Empresa cnpj = empresaRepository.findById(id).get();
-        cnpj.setNomeEmpresa(cnpjAlterado.getNomeEmpresa());
-        cnpj.setCepEmpresa(cnpjAlterado.getCepEmpresa());
+        Empresa empresas = empresaRepository.findById(id).get();
+        empresas.setNomeEmpresa(empresasAlterado.getNomeEmpresa());
+        empresas.setCepEmpresa(empresasAlterado.getCepEmpresa());
 
-        return empresaRepository.save(cnpj);
+        return empresaRepository.save(empresas);
     }
 
     @Transactional
     public void removerEmpresa(Long id) {
 
-        Empresa cnpj = empresaRepository.findById(id).get();
-        cnpj.setHabilitado(Boolean.FALSE);
-        empresaRepository.save(cnpj);
+        Empresa empresas = empresaRepository.findById(id).get();
+        empresas.setHabilitado(Boolean.FALSE);
+        empresaRepository.save(empresas);
 
-        Usuario usuario = this.obterPorID(cnpj.getUsuario().getId());
-        usuario.getEmpresas().remove(cnpj);
+        Usuario usuario = this.obterPorID(empresas.getUsuario().getId());
+        usuario.getEmpresas().remove(empresas);
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
     }

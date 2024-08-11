@@ -87,21 +87,21 @@ public class UsuarioController {
     @PostMapping("/empresa/{usuarioId}")
    public ResponseEntity<Empresa> adicionarEmpresa(@PathVariable("usuarioId") Long empresaId, @RequestBody @Valid EmpresaRequest request) {
 
-    Empresa cnpj = usuarioService.adicionarEmpresa(empresaId, request.build());
-       return new ResponseEntity<Empresa>(cnpj, HttpStatus.CREATED);
+    Empresa usuario = usuarioService.adicionarEmpresa(empresaId, request.build());
+       return new ResponseEntity<Empresa>(usuario, HttpStatus.CREATED);
    }
 
-   @PutMapping("/empresa/{cnpjId}")
-   public ResponseEntity<Empresa> atualizarEmpresa(@PathVariable("cnpjId") Long cnpjId, @RequestBody EmpresaRequest request) {
+   @PutMapping("/empresa/{usuarioId}")
+   public ResponseEntity<Empresa> atualizarEmpresa(@PathVariable("usuarioId") Long usuarioId, @RequestBody EmpresaRequest request) {
 
-    Empresa cnpj = usuarioService.atualizarEmpresa(cnpjId, request.build());
-       return new ResponseEntity<Empresa>(cnpj, HttpStatus.OK);
+    Empresa usuario = usuarioService.atualizarEmpresa(usuarioId, request.build());
+       return new ResponseEntity<Empresa>(usuario, HttpStatus.OK);
    }
   
-   @DeleteMapping("/empresa/{cnpjId}")
-   public ResponseEntity<Void> removerEnderecoCliente(@PathVariable("cnpjId") Long cnpjId) {
+   @DeleteMapping("/empresa/{usuarioId}")
+   public ResponseEntity<Void> removerEnderecoCliente(@PathVariable("usuarioId") Long usuarioId) {
 
-    usuarioService.removerEmpresa(cnpjId);
+    usuarioService.removerEmpresa(usuarioId);
        return ResponseEntity.noContent().build();
    }
 

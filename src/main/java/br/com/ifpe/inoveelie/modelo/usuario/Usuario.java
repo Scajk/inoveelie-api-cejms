@@ -41,7 +41,7 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
     @Fetch(FetchMode.SUBSELECT)
     private List<Empresa> empresas;
 
-    @Column
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -60,6 +60,10 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
    @JsonIgnore
    @Column(nullable = false)
    private String password;
+
+   @JsonIgnore
+   @Column(nullable = false)
+   private String confirmaPassword;
 
    @JsonIgnore
    @ElementCollection(fetch = FetchType.EAGER)
