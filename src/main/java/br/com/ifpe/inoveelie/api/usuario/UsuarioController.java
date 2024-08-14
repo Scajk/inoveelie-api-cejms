@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
@@ -75,6 +76,24 @@ public class UsuarioController {
 
         usuarioService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/ativar")
+    public ResponseEntity<Void> ativarConta(@RequestParam String email, @RequestParam String codigo) {
+        boolean ativado = usuarioService.activateUser(email, codigo);
+        return ativado ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PostMapping("/recuperar-senha")
+    public ResponseEntity<Void> iniciarRecuperacaoSenha(@RequestParam String email) {
+        usuarioService.iniciarRecuperacaoSenha(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<Void> redefinirSenha(@RequestParam String email, @RequestParam String token, @RequestParam String novaSenha) {
+        boolean senhaRedefinida = usuarioService.redefinirSenha(email, token, novaSenha);
+        return senhaRedefinida ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////

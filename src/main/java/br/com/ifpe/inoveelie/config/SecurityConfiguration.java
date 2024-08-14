@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()               
                 .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
                  .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
+                 .requestMatchers(HttpMethod.POST, "/api/ativar").permitAll()                 
                 .anyRequest()
                 .authenticated()
                 .and()
