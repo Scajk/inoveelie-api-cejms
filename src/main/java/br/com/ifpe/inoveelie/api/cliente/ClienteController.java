@@ -26,6 +26,7 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping
+    @CrossOrigin
     public ResponseEntity<Cliente> save(@RequestBody ClienteRequest request) {
 
         Cliente cliente = clienteService.save(request.build());

@@ -18,7 +18,7 @@ import br.com.ifpe.inoveelie.modelo.usuario.UsuarioService;
 public class AuthenticationController {
 
     private final JwtService jwtService;
-    
+
     private UsuarioService userService;
 
     public AuthenticationController(JwtService jwtService, UsuarioService userService) {
@@ -29,7 +29,7 @@ public class AuthenticationController {
 
     @PostMapping
     public Map<Object, Object> signin(@RequestBody AuthenticationRequest data) {
-    
+
         Usuario authenticatedUser = userService.authenticate(data.getUsername(), data.getPassword());
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
@@ -40,6 +40,5 @@ public class AuthenticationController {
         loginResponse.put("tokenExpiresIn", jwtService.getExpirationTime());
 
         return loginResponse;
-    }    
+    }
 }
-
