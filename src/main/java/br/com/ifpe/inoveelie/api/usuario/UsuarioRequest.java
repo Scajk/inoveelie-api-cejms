@@ -28,13 +28,9 @@ public class UsuarioRequest {
     @NotBlank(message = "A senha é de preenchimento obrigatório")
     private String confirmaPassword;
 
-    @NotBlank
     private String nome;
 
     private String sobrenome;
-
-    @NotBlank
-    private String foneCelular;
 
     public Usuario build() {
 
@@ -46,7 +42,6 @@ public class UsuarioRequest {
                 .nome(nome)
                 .email(email)
                 .sobrenome(sobrenome)
-                .foneCelular(foneCelular)
                 .build();
 
         return c;

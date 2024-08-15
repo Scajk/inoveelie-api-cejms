@@ -44,14 +44,11 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String nome;
 
     @Column
     private String sobrenome;
-
-    @Column(nullable = false, unique = true)
-    private String foneCelular;
 
     @JsonIgnore
     @Column(nullable = false)
@@ -65,12 +62,14 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
     @Column(nullable = false)
     private String confirmaPassword;
 
-    @Column(name = "codigo_ativacao", length = 6)
+    @Column(name = "codigo_ativacao")
     private String codigoAtivacao;
 
-    private boolean isActive; // Novo campo para verificar se a conta está ativada
+    //private boolean isActive; // Novo campo para verificar se a conta está ativada
 
     private boolean ativo;
+
+    private String activationCode;
 
     private String resetToken;
 

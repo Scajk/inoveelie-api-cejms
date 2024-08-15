@@ -47,10 +47,12 @@
         <div class="content">
             <p>Olá <span th:text="${usuario.nome}"></span>,</p>
             <p>Obrigado por se registrar no nosso aplicativo! Estamos muito felizes em tê-lo conosco.</p>
+            
             <p>Seu código de ativação é: <strong><span th:text="${usuario.codigoAtivacao}"></span></strong></p>
             <p>Para ativar sua conta, por favor clique no link abaixo:</p>
-            <p><a th:href="@{/api/usuario/ativar(email=${usuario.email},codigo=${usuario.codigoAtivacao})}">Ativar minha conta</a></p>
+            <p><a href="http://localhost:3000/Codigo-conta">Ativar minha conta</a></p>
             <p>Se você não criou esta conta, por favor, ignore este email.</p>
+           
         </div>
         <div class="footer">
             <p>&copy; 2024 Nosso Aplicativo. Todos os direitos reservados.</p>

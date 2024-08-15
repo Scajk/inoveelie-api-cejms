@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
-
-    /*
-     * @Autowired
-     * private UsuarioRepository usuarioRepository;
-     */
+    
+    /* @Autowired
+    private UsuarioRepository usuarioRepository; */
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -53,74 +52,72 @@ public class UsuarioService implements UserDetailsService {
         }
     }
 
-    
     @Transactional
-     public Usuario save(Usuario usuario) {
-     // 1. Validação de Senhas
-      if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
-      throw new
-      SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas."
-      );
-      }
-      
-      // 2. Codificação da Senha
-      usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-      
-      // 3. Preparação para Ativação
-      String activationCode = UUID.randomUUID().toString();
-      usuario.setCodigoAtivacao(activationCode);
-      usuario.setAtivo(false); // Definindo a conta como inativa até a ativação
-      
-      // 4. Configurações Padrão
-      usuario.setHabilitado(Boolean.TRUE);
-      usuario.setVersao(1L);
-      usuario.setDataCriacao(LocalDate.now());
-      
-      // 5. Salvamento do Usuário
-      Usuario usuarioSalvo = repository.save(usuario);
-      
-      // 6. Envio de E-mail de Ativação
-      emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
-      
-      return usuarioSalvo;
-    }
-    
-
-    
-    /* @Transactional
     public Usuario save(Usuario usuario) {
-      if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
-      throw new
-      SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas."
-      );
-      }
-      
-      usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-      usuario.setHabilitado(Boolean.TRUE);
-      usuario.setVersao(1L);
-      usuario.setDataCriacao(LocalDate.now());
-      Usuario usuarioSalvo = repository.save(usuario);
-      
-      emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
-      
-      return usuarioSalvo;
-    } */
-    
+        // 1. Validação de Senhas
+        if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
+            throw new SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas.");
+        }
 
-    /* @Transactional
-    public Usuario save(Usuario usuario) {
-        // Geração do código de ativação
+        // 2. Codificação da Senha
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        // 3. Preparação para Ativação
         String activationCode = UUID.randomUUID().toString();
         usuario.setCodigoAtivacao(activationCode);
+        usuario.setAtivo(false); // Definindo a conta como inativa até a ativação
 
-        // Salvar o usuário com o código de ativação
-        Usuario savedUser = repository.save(usuario);
+        // 4. Configurações Padrão
+        usuario.setHabilitado(Boolean.TRUE);
+        usuario.setVersao(1L);
+        usuario.setDataCriacao(LocalDate.now());
 
-        // Enviar email de ativação
-         emailService.enviarEmailConfirmacaoCadastroUsuario(savedUser);
+        // 5. Salvamento do Usuário
+        Usuario usuarioSalvo = repository.save(usuario);
 
-        return savedUser;
-    } */
+        // 6. Envio de E-mail de Ativação
+        emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
+
+        return usuarioSalvo;
+    }
+
+    /*
+     * @Transactional
+     * public Usuario save(Usuario usuario) {
+     * if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
+     * throw new
+     * SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas."
+     * );
+     * }
+     * 
+     * usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+     * usuario.setHabilitado(Boolean.TRUE);
+     * usuario.setVersao(1L);
+     * usuario.setDataCriacao(LocalDate.now());
+     * Usuario usuarioSalvo = repository.save(usuario);
+     * 
+     * emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
+     * 
+     * return usuarioSalvo;
+     * }
+     */
+
+    /*
+     * @Transactional
+     * public Usuario save(Usuario usuario) {
+     * // Geração do código de ativação
+     * String activationCode = UUID.randomUUID().toString();
+     * usuario.setCodigoAtivacao(activationCode);
+     * 
+     * // Salvar o usuário com o código de ativação
+     * Usuario savedUser = repository.save(usuario);
+     * 
+     * // Enviar email de ativação
+     * emailService.enviarEmailConfirmacaoCadastroUsuario(savedUser);
+     * 
+     * return savedUser;
+     * }
+     */
 
     @Transactional
     public boolean activateUser(String email, String codigo) {
@@ -227,41 +224,39 @@ public class UsuarioService implements UserDetailsService {
      * }
      */
 
-    /*
-     * public Usuario save(Usuario usuario, boolean ativo) {
-     * // Gera um código de ativação
-     * String activationCode = generateActivationCode();
-     * usuario.setActivationCode(activationCode);
-     * usuario.setActive(false); // Conta não ativada inicialmente
-     * Usuario savedUsuario = usuarioRepository.save(usuario);
-     * 
-     * // Envia o e-mail com o código de ativação
-     * emailService.enviarEmailCodigoAtivacao(usuario, activationCode);
-     * 
-     * return savedUsuario;
-     * }
-     * 
-     * private String generateActivationCode() {
-     * Random random = new Random();
-     * int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
-     * return String.valueOf(code);
-     * }
-     */
+    /* public Usuario save(Usuario usuario, boolean ativo) {
+        // Gera um código de ativação
+        String activationCode = generateActivationCode();
+        usuario.setActivationCode(activationCode);
+        usuario.setActive(false); // Conta não ativada inicialmente
+        Usuario savedUsuario = repository.save(usuario);
 
-    /*
-     * public boolean activateUser(String email, String activationCode) {
-     * Usuario usuario = usuarioRepository.findByUsername(email)
-     * .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-     * 
-     * if (usuario.getActivationCode().equals(activationCode)) {
-     * usuario.setActive(true);
-     * usuario.setActivationCode(null); // Limpa o código de ativação
-     * usuarioRepository.save(usuario);
-     * return true;
-     * }
-     * return false;
-     * }
-     */
+        // Envia o e-mail com o código de ativação
+        emailService.enviarEmailCodigoAtivacao(usuario, activationCode);
+
+        return savedUsuario;
+    } */
+
+    private String generateActivationCode() {
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+        return String.valueOf(code);
+    }
+
+    
+    /* public boolean activateUser(String email, String activationCode) {
+     Usuario usuario = usuarioRepository.findByUsername(email)
+     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+     
+     if (usuario.getActivationCode().equals(activationCode)) {
+     usuario.setActive(true);
+     usuario.setActivationCode(null); // Limpa o código de ativação
+     usuarioRepository.save(usuario);
+     return true;
+     }
+     return false;
+    } */
+    
 
     public List<Usuario> listarTodos() {
 
@@ -279,7 +274,6 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuario = repository.findById(id).get();
         usuario.setNome(usuarioAlterado.getNome());
         usuario.setSobrenome(usuarioAlterado.getSobrenome());
-        usuario.setFoneCelular(usuarioAlterado.getFoneCelular());
 
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
