@@ -29,9 +29,8 @@ public class UsuarioService implements UserDetailsService {
     private EmpresaRepository empresaRepository;
 
     private final PasswordEncoder passwordEncoder;
-    
-    private final AuthenticationManager authenticationManager;
 
+    private final AuthenticationManager authenticationManager;
 
     public UsuarioService(UsuarioRepository usRepository, AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder) {
@@ -80,7 +79,6 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuario = repository.findById(id).get();
         usuario.setNome(usuarioAlterado.getNome());
         usuario.setSobrenome(usuarioAlterado.getSobrenome());
-        usuario.setFoneCelular(usuarioAlterado.getFoneCelular());
 
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
