@@ -41,32 +41,47 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
     @Fetch(FetchMode.SUBSELECT)
     private List<Empresa> empresas;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String nome;
 
     @Column
     private String sobrenome;
 
-    @Column(nullable = false, unique = true)
-    private String foneCelular;
+    @JsonIgnore
+    @Column(nullable = false)
+    private String username;
 
     @JsonIgnore
-   @Column(nullable = false)
-   private String username;
+    @Column(nullable = false)
+    private String password;
 
-   @JsonIgnore
-   @Column(nullable = false)
-   private String password;
+    @JsonIgnore
+    @Column(nullable = false)
+    private String confirmaPassword;
 
-   @JsonIgnore
-   @ElementCollection(fetch = FetchType.EAGER)
-   @Builder.Default
-   private List<String> roles = new ArrayList<>();
+    @Column(name = "codigo_ativacao")
+    private String codigoAtivacao;
 
-   @Override
+    //private boolean isActive; // Novo campo para verificar se a conta está ativada
+
+    private boolean ativo;
+
+    private String activationCode;
+
+    private String resetToken;
+
+    @Column(unique = true)
+    private String passwordResetCode;
+
+    @JsonIgnore
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }

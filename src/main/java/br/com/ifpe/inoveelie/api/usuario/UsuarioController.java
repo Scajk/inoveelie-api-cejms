@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
@@ -77,6 +78,24 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/ativar")
+    public ResponseEntity<Void> ativarConta(@RequestParam String email, @RequestParam String codigo) {
+        boolean ativado = usuarioService.activateUser(email, codigo);
+        return ativado ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PostMapping("/recuperar-senha")
+    public ResponseEntity<Void> iniciarRecuperacaoSenha(@RequestParam String email) {
+        usuarioService.iniciarRecuperacaoSenha(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<Void> redefinirSenha(@RequestParam String email, @RequestParam String token, @RequestParam String novaSenha) {
+        boolean senhaRedefinida = usuarioService.redefinirSenha(email, token, novaSenha);
+        return senhaRedefinida ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -87,21 +106,21 @@ public class UsuarioController {
     @PostMapping("/empresa/{usuarioId}")
    public ResponseEntity<Empresa> adicionarEmpresa(@PathVariable("usuarioId") Long empresaId, @RequestBody @Valid EmpresaRequest request) {
 
-    Empresa cnpj = usuarioService.adicionarEmpresa(empresaId, request.build());
-       return new ResponseEntity<Empresa>(cnpj, HttpStatus.CREATED);
+    Empresa usuario = usuarioService.adicionarEmpresa(empresaId, request.build());
+       return new ResponseEntity<Empresa>(usuario, HttpStatus.CREATED);
    }
 
-   @PutMapping("/empresa/{cnpjId}")
-   public ResponseEntity<Empresa> atualizarEmpresa(@PathVariable("cnpjId") Long cnpjId, @RequestBody EmpresaRequest request) {
+   @PutMapping("/empresa/{usuarioId}")
+   public ResponseEntity<Empresa> atualizarEmpresa(@PathVariable("usuarioId") Long usuarioId, @RequestBody EmpresaRequest request) {
 
-    Empresa cnpj = usuarioService.atualizarEmpresa(cnpjId, request.build());
-       return new ResponseEntity<Empresa>(cnpj, HttpStatus.OK);
+    Empresa usuario = usuarioService.atualizarEmpresa(usuarioId, request.build());
+       return new ResponseEntity<Empresa>(usuario, HttpStatus.OK);
    }
   
-   @DeleteMapping("/empresa/{cnpjId}")
-   public ResponseEntity<Void> removerEnderecoCliente(@PathVariable("cnpjId") Long cnpjId) {
+   @DeleteMapping("/empresa/{usuarioId}")
+   public ResponseEntity<Void> removerEnderecoCliente(@PathVariable("usuarioId") Long usuarioId) {
 
-    usuarioService.removerEmpresa(cnpjId);
+    usuarioService.removerEmpresa(usuarioId);
        return ResponseEntity.noContent().build();
    }
 

@@ -3,6 +3,9 @@ package br.com.ifpe.inoveelie.modelo.usuario;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +27,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
+    
+    /* @Autowired
+    private UsuarioRepository usuarioRepository; */
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -40,19 +46,217 @@ public class UsuarioService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public class SenhasNaoConferemException extends RuntimeException {
+        public SenhasNaoConferemException(String message) {
+            super(message);
+        }
+    }
+
     @Transactional
     public Usuario save(Usuario usuario) {
+        // 1. Validação de Senhas
+        if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
+            throw new SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas.");
+        }
 
+        // 2. Codificação da Senha
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        // 3. Preparação para Ativação
+        String activationCode = UUID.randomUUID().toString();
+        usuario.setCodigoAtivacao(activationCode);
+        usuario.setAtivo(false); // Definindo a conta como inativa até a ativação
+
+        // 4. Configurações Padrão
         usuario.setHabilitado(Boolean.TRUE);
         usuario.setVersao(1L);
         usuario.setDataCriacao(LocalDate.now());
+
+        // 5. Salvamento do Usuário
         Usuario usuarioSalvo = repository.save(usuario);
 
-        // emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
+        // 6. Envio de E-mail de Ativação
+        emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
 
         return usuarioSalvo;
     }
+
+    /*
+     * @Transactional
+     * public Usuario save(Usuario usuario) {
+     * if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
+     * throw new
+     * SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas."
+     * );
+     * }
+     * 
+     * usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+     * usuario.setHabilitado(Boolean.TRUE);
+     * usuario.setVersao(1L);
+     * usuario.setDataCriacao(LocalDate.now());
+     * Usuario usuarioSalvo = repository.save(usuario);
+     * 
+     * emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
+     * 
+     * return usuarioSalvo;
+     * }
+     */
+
+    /*
+     * @Transactional
+     * public Usuario save(Usuario usuario) {
+     * // Geração do código de ativação
+     * String activationCode = UUID.randomUUID().toString();
+     * usuario.setCodigoAtivacao(activationCode);
+     * 
+     * // Salvar o usuário com o código de ativação
+     * Usuario savedUser = repository.save(usuario);
+     * 
+     * // Enviar email de ativação
+     * emailService.enviarEmailConfirmacaoCadastroUsuario(savedUser);
+     * 
+     * return savedUser;
+     * }
+     */
+
+    @Transactional
+    public boolean activateUser(String email, String codigo) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+
+            // Verifica se o código de ativação coincide
+            if (usuario.getCodigoAtivacao().equals(codigo)) {
+                usuario.setAtivo(true);
+                usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
+                repository.save(usuario);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Método para iniciar o processo de recuperação de senha
+    @Transactional
+    public void iniciarRecuperacaoSenha(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String resetToken = UUID.randomUUID().toString();
+            usuario.setResetToken(resetToken);
+            repository.save(usuario);
+
+            // Envia email com o token de redefinição
+            emailService.enviarEmailRecuperacaoSenha(usuario);
+        }
+    }
+
+    // Método para redefinir a senha usando o token
+    @Transactional
+    public boolean redefinirSenha(String email, String token, String novaSenha) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+
+            // Verifica se o token coincide
+            if (usuario.getResetToken() != null && usuario.getResetToken().equals(token)) {
+                usuario.setPassword(novaSenha);
+                usuario.setResetToken(null); // Remove o token após uso
+                repository.save(usuario);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * //<<<<<<<<<<<<<<<<<<<<<<<<< SOLICTAR RECUPERAÇÃO DE SENHA
+     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     * //<<<<<<<<<<<<<<<<<<<<<<<<< SOLICTAR RECUPERAÇÃO DE SENHA
+     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     * //<<<<<<<<<<<<<<<<<<<<<<<<< SOLICTAR RECUPERAÇÃO DE SENHA
+     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     * 
+     * public void solicitarRecuperacaoSenha(String email) {
+     * Usuario usuario = usuarioRepository.findByUsername(email)
+     * .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+     * 
+     * String resetCode = generateResetCode(); // Método que gera o código de
+     * recuperação
+     * usuario.setPasswordResetCode(resetCode);
+     * usuarioRepository.save(usuario);
+     * 
+     * emailService.enviarEmailRecuperacaoSenha(usuario, resetCode); // Implementar
+     * este método no EmailService
+     * }
+     * 
+     * private String generateResetCode() {
+     * Random random = new Random();
+     * int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+     * return String.valueOf(code);
+     * }
+     * 
+     * //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REDEFINIR SENHA
+     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     * //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REDEFINIR SENHA
+     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     * //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REDEFINIR SENHA
+     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     * 
+     * @Transactional
+     * public void redefinirSenha(String email, String resetCode, String novaSenha)
+     * {
+     * Usuario usuario = usuarioRepository.findByUsername(email)
+     * .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+     * 
+     * if (usuario.getPasswordResetCode().equals(resetCode)) {
+     * usuario.setPassword(passwordEncoder.encode(novaSenha));
+     * usuario.setPasswordResetCode(null); // Limpa o código de recuperação
+     * usuarioRepository.save(usuario);
+     * } else {
+     * throw new RuntimeException("Código de recuperação inválido");
+     * }
+     * }
+     */
+
+    /* public Usuario save(Usuario usuario, boolean ativo) {
+        // Gera um código de ativação
+        String activationCode = generateActivationCode();
+        usuario.setActivationCode(activationCode);
+        usuario.setActive(false); // Conta não ativada inicialmente
+        Usuario savedUsuario = repository.save(usuario);
+
+        // Envia o e-mail com o código de ativação
+        emailService.enviarEmailCodigoAtivacao(usuario, activationCode);
+
+        return savedUsuario;
+    } */
+
+    private String generateActivationCode() {
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+        return String.valueOf(code);
+    }
+
+    
+    /* public boolean activateUser(String email, String activationCode) {
+     Usuario usuario = usuarioRepository.findByUsername(email)
+     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+     
+     if (usuario.getActivationCode().equals(activationCode)) {
+     usuario.setActive(true);
+     usuario.setActivationCode(null); // Limpa o código de ativação
+     usuarioRepository.save(usuario);
+     return true;
+     }
+     return false;
+    } */
+    
 
     public List<Usuario> listarTodos() {
 
@@ -70,7 +274,6 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuario = repository.findById(id).get();
         usuario.setNome(usuarioAlterado.getNome());
         usuario.setSobrenome(usuarioAlterado.getSobrenome());
-        usuario.setFoneCelular(usuarioAlterado.getFoneCelular());
 
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
@@ -98,15 +301,15 @@ public class UsuarioService implements UserDetailsService {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Transactional
-    public Empresa adicionarEmpresa(Long usuarioId, Empresa cnpj) {
+    public Empresa adicionarEmpresa(Long usuarioId, Empresa empresas) {
 
         Usuario usuario = this.obterPorID(usuarioId);
 
         // Primeiro salva o EnderecoCliente:
 
-        cnpj.setUsuario(usuario);
-        cnpj.setHabilitado(Boolean.TRUE);
-        empresaRepository.save(cnpj);
+        empresas.setUsuario(usuario);
+        empresas.setHabilitado(Boolean.TRUE);
+        empresaRepository.save(empresas);
 
         // Depois acrescenta o endereço criado ao cliente e atualiza o cliente:
 
@@ -116,33 +319,33 @@ public class UsuarioService implements UserDetailsService {
             listaEmpresa = new ArrayList<Empresa>();
         }
 
-        listaEmpresa.add(cnpj);
+        listaEmpresa.add(empresas);
         usuario.setEmpresas(listaEmpresa);
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
 
-        return cnpj;
+        return empresas;
     }
 
     @Transactional
-    public Empresa atualizarEmpresa(Long id, Empresa cnpjAlterado) {
+    public Empresa atualizarEmpresa(Long id, Empresa empresasAlterado) {
 
-        Empresa cnpj = empresaRepository.findById(id).get();
-        cnpj.setNomeEmpresa(cnpjAlterado.getNomeEmpresa());
-        cnpj.setCepEmpresa(cnpjAlterado.getCepEmpresa());
+        Empresa empresas = empresaRepository.findById(id).get();
+        empresas.setNomeEmpresa(empresasAlterado.getNomeEmpresa());
+        empresas.setCepEmpresa(empresasAlterado.getCepEmpresa());
 
-        return empresaRepository.save(cnpj);
+        return empresaRepository.save(empresas);
     }
 
     @Transactional
     public void removerEmpresa(Long id) {
 
-        Empresa cnpj = empresaRepository.findById(id).get();
-        cnpj.setHabilitado(Boolean.FALSE);
-        empresaRepository.save(cnpj);
+        Empresa empresas = empresaRepository.findById(id).get();
+        empresas.setHabilitado(Boolean.FALSE);
+        empresaRepository.save(empresas);
 
-        Usuario usuario = this.obterPorID(cnpj.getUsuario().getId());
-        usuario.getEmpresas().remove(cnpj);
+        Usuario usuario = this.obterPorID(empresas.getUsuario().getId());
+        usuario.getEmpresas().remove(empresas);
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
     }

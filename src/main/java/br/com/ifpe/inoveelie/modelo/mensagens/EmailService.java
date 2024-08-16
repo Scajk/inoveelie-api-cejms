@@ -3,6 +3,7 @@ package br.com.ifpe.inoveelie.modelo.mensagens;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -43,6 +44,14 @@ public class EmailService {
 
     private JavaMailSender emailSender;
 
+    public void enviarEmailTeste() {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo("santoscaio2002@gmail.com");
+        message.setSubject("Teste de Envio de E-mail");
+        message.setText("Este é um e-mail de teste.");
+        emailSender.send(message);
+    }
+
     public void enviarEmailConfirmacaoCadastroUsuario(Usuario usuario) {
 
         String assuntoEmail = "Bem vindo ao nosso aplicativo";
@@ -51,6 +60,24 @@ public class EmailService {
         params.setVariable("usuario", usuario);
 
         this.sendMailTemplate("bem_vindo_usuario.html", usuario.getEmail(), assuntoEmail, params);
+    }
+
+    public void enviarEmailRecuperacaoSenha(Usuario usuario) {
+        String assuntoEmail = "Recuperação de Senha";
+        Context params = new Context();
+        params.setVariable("usuario", usuario);
+        params.setVariable("resetToken", usuario.getResetToken());
+        this.sendMailTemplate("recuperacao_senha.html", usuario.getEmail(), assuntoEmail, params);
+    }
+
+    @Async
+    public void enviarEmailCodigoAtivacao(Usuario usuario, String activationCode) {
+        String assuntoEmail = "Código de Ativação";
+        Context params = new Context();
+        params.setVariable("usuario", usuario);
+        params.setVariable("codigo", activationCode);
+
+        this.sendMailTemplate("codigo_ativacao.html", usuario.getEmail(), assuntoEmail, params);
     }
 
     @Async

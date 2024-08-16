@@ -1,5 +1,6 @@
 package br.com.ifpe.inoveelie.config;
 
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import br.com.ifpe.inoveelie.modelo.seguranca.JwtAuthenticationFilter;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -23,7 +25,6 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider) {
-
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -31,35 +32,40 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf()
-                .disable()
-                .authorizeHttpRequests()               
+        http
+            .csrf(c -> c.disable())
+            .authorizeHttpRequests(authorize -> authorize
+
                 .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
-                 .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
+                .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuario/ativar").permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/api-docs/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
+
+                .anyRequest().authenticated()
+
+            )
+            .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            )            
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
-        configuration.setAllowedMethods(List.of("GET", "POST"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-
+        configuration.setAllowCredentials(true);
+    
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);    
         return source;
     }
 }
-

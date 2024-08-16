@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo ao nosso aplicativo</title>
+    <title>Recuperação de Senha</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,22 +41,18 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Bem-vindo, <span th:text="${usuario.nome}"></span>!</h1>
-        </div>
-        <div class="content">
-            <p>Olá <span th:text="${usuario.nome}"></span>,</p>
-            <p>Obrigado por se registrar no nosso aplicativo! Estamos muito felizes em tê-lo conosco.</p>
-            
-            <p>Seu código de ativação é: <strong><span th:text="${usuario.codigoAtivacao}"></span></strong></p>
-            <p>Para ativar sua conta, por favor clique no link abaixo:</p>
-            <p><a href="http://localhost:3000/Codigo-conta">Ativar minha conta</a></p>
-            <p>Se você não criou esta conta, por favor, ignore este email.</p>
-           
-        </div>
-        <div class="footer">
-            <p>&copy; 2024 Nosso Aplicativo. Todos os direitos reservados.</p>
-        </div>
+        <h1>Recuperação de Senha</h1>
+        <p>Olá, <strong th:text="${usuario.nome}">[Nome do Usuário]</strong>,</p>
+        <p>Recebemos uma solicitação para redefinir a senha da sua conta. Se você não solicitou a redefinição de senha, por favor, ignore este e-mail.</p>
+        <p>Para redefinir sua senha, clique no botão abaixo ou copie e cole o link no seu navegador:</p>
+        <p>
+            <a href="http://localhost:8080/redefinir-senha?token=[[${resetToken}]]" class="btn">Redefinir Senha</a>
+        </p>
+        <p>Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:</p>
+        <p><a href="http://localhost:8080/redefinir-senha?token=[[${resetToken}]]" th:href="@{http://seu-dominio.com/redefinir-senha?token=__${resetToken}__}">http://seu-dominio.com/redefinir-senha?token=[[${resetToken}]]</a></p>
+        <p>Este link é válido por 24 horas.</p>
+        <p>Atenciosamente,</p>
+        <p>Equipe do Seu Aplicativo</p>
     </div>
 </body>
 </html>
