@@ -46,8 +46,55 @@ public class UsuarioService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //<<<<<<<<<<<<<<< EXCEPTIONS >>>>>>>>>>>>>>>>
+    //<<<<<<<<<<<<<<< EXCEPTIONS >>>>>>>>>>>>>>>>
+    //<<<<<<<<<<<<<<< EXCEPTIONS >>>>>>>>>>>>>>>>
+
+    //FINALIZAR 3
+
+    
+
+    /* 
+    3
+     * package br.com.ifpe.inoveelie.service;
+
+import br.com.ifpe.inoveelie.exception.SenhaInvalidaException;
+import br.com.ifpe.inoveelie.validator.SenhaValidator;
+
+public class UsuarioService {
+
+    private final SenhaValidator senhaValidator;
+
+    public UsuarioService(SenhaValidator senhaValidator) {
+        this.senhaValidator = senhaValidator;
+    }
+
+    public void criarUsuario(String senha) {
+        try {
+            senhaValidator.isValid(senha, null);
+            // Continuar com a criação do usuário
+        } catch (SenhaInvalidaException e) {
+            // Lidar com a exceção e informar ao usuário
+            System.out.println(e.getMessage());
+        }
+    }
+}
+    */
+
     public class SenhasNaoConferemException extends RuntimeException {
         public SenhasNaoConferemException(String message) {
+            super(message);
+        }
+    }
+
+    public class EmailJaExistenteException extends RuntimeException {
+        public EmailJaExistenteException(String message) {
+            super(message);
+        }
+    }
+
+    public class SenhaInvalidaException extends RuntimeException {
+        public SenhaInvalidaException(String message) {
             super(message);
         }
     }
@@ -57,6 +104,10 @@ public class UsuarioService implements UserDetailsService {
         // 1. Validação de Senhas
         if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
             throw new SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas.");
+        }
+
+        if (repository.existsByEmail(usuario.getEmail())) {
+            throw new EmailJaExistenteException("Já existe um usuário cadastrado com este e-mail.");
         }
 
         // 2. Codificação da Senha
@@ -120,14 +171,14 @@ public class UsuarioService implements UserDetailsService {
      */
 
     @Transactional
-    public boolean activateUser(String email, String codigo) {
+    public boolean activateUser(String email, String activationCode) {
         Optional<Usuario> usuarioOpt = repository.findByEmail(email);
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 
             // Verifica se o código de ativação coincide
-            if (usuario.getCodigoAtivacao().equals(codigo)) {
+            if (usuario.getCodigoAtivacao().equals(activationCode)) {
                 usuario.setAtivo(true);
                 usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
                 repository.save(usuario);
