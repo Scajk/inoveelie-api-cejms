@@ -47,10 +47,6 @@ public class UsuarioService implements UserDetailsService {
     }
 
     //<<<<<<<<<<<<<<< EXCEPTIONS >>>>>>>>>>>>>>>>
-    //<<<<<<<<<<<<<<< EXCEPTIONS >>>>>>>>>>>>>>>>
-    //<<<<<<<<<<<<<<< EXCEPTIONS >>>>>>>>>>>>>>>>
-
-    //FINALIZAR 3
 
     
 

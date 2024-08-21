@@ -1,4 +1,4 @@
-package br.com.ifpe.inoveelie.validator;
+/* package br.com.ifpe.inoveelie.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -20,16 +20,14 @@ public class SenhaValidator implements ConstraintValidator<SenhaValida, String> 
         }
         return true;
     }
+} */
 
-    /* FINALIZAR
+    
 
-    2
-
-    package br.com.ifpe.inoveelie.validator;
+package br.com.ifpe.inoveelie.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import br.com.ifpe.inoveelie.exception.SenhaInvalidaException;
 
 public class SenhaValidator implements ConstraintValidator<SenhaValida, String> {
 
@@ -62,13 +60,6 @@ public class SenhaValidator implements ConstraintValidator<SenhaValida, String> 
             mensagensErro.append("A senha não deve conter números em sequência. ");
         }
 
-        // Se houver mensagens de erro, lança a exceção
-        if (mensagensErro.length() > 0) {
-            throw new SenhaInvalidaException(mensagensErro.toString().trim());
-        }
-
         return true;
     }
-}
-    } */ 
 }
