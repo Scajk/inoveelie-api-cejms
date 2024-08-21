@@ -79,8 +79,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/ativar")
-    public ResponseEntity<Void> ativarConta(@RequestParam String email, @RequestParam String codigo) {
-        boolean ativado = usuarioService.activateUser(email, codigo);
+    public ResponseEntity<Void> ativarConta(@RequestParam String email, @RequestParam String codigoAtivacao) {
+        boolean ativado = usuarioService.activateUser(email, codigoAtivacao);
         return ativado ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

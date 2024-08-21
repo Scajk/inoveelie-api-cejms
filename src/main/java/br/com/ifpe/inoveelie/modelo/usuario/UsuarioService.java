@@ -119,24 +119,24 @@ public class UsuarioService implements UserDetailsService {
      * }
      */
 
-    @Transactional
-    public boolean activateUser(String email, String codigo) {
-        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
-
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-
-            // Verifica se o código de ativação coincide
-            if (usuario.getCodigoAtivacao().equals(codigo)) {
-                usuario.setAtivo(true);
-                usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
-                repository.save(usuario);
-                return true;
-            }
-        }
-
-        return false;
-    }
+     @Transactional
+     public boolean activateUser(String email, String activationCode) {
+         Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+ 
+         if (usuarioOpt.isPresent()) {
+             Usuario usuario = usuarioOpt.get();
+ 
+             // Verifica se o código de ativação coincide
+             if (usuario.getCodigoAtivacao().equals(activationCode)) {
+                 usuario.setAtivo(true);
+                 usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
+                 repository.save(usuario);
+                 return true;
+             }
+         }
+ 
+         return false;
+     }
 
     // Método para iniciar o processo de recuperação de senha
     @Transactional
