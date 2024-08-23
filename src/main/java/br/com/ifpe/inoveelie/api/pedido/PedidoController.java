@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import br.com.ifpe.inoveelie.api.cliente.ClienteRequest;
+import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
 import br.com.ifpe.inoveelie.modelo.material.MaterialService;
 import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import br.com.ifpe.inoveelie.modelo.pedido.PedidoService;
@@ -37,15 +40,12 @@ public class PedidoController {
        description = "Endpoint responsável por inserir um pedido no sistema."
    )
    @PostMapping
-   public ResponseEntity<Pedido> save(@RequestBody @Valid
-   PedidoRequest request) {
+    public ResponseEntity<Pedido> save(@RequestBody @Valid PedidoRequest request) {
 
-       Pedido pedidoNovo = request.build();
-       pedidoNovo.setMateriais(materialService.obterPorID(request.getIdMaterial()));
+        Pedido pedido = pedidoService.save(request.build());
+        return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
 
-       Pedido pedido = pedidoService.save(pedidoNovo);
-       return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
-   }
+    }
 
    @Operation(
        summary = "Serviço responsável por listar um produto no sistema.",
@@ -70,13 +70,10 @@ public class PedidoController {
        description = "Endpoint responsável por alterar um pedido no sistema."
    )
    @PutMapping("/{id}")
-   public ResponseEntity<Pedido> update(@PathVariable("id") Long id, @RequestBody PedidoRequest request) {
+    public ResponseEntity<Pedido> update(@PathVariable("id") Long id, @RequestBody @Valid PedidoRequest request) {
 
-       Pedido pedido = request.build();
-       pedido.setMateriais(materialService.obterPorID(request.getIdMaterial()));
-       pedidoService.update(id, pedido);
-      
-       return ResponseEntity.ok().build();
+        pedidoService.update(id, request.build());
+        return ResponseEntity.ok().build();
    }
 
    @Operation(

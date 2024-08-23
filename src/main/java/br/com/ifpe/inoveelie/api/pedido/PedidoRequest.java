@@ -13,32 +13,49 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class PedidoRequest {
-    
-   private Long idMaterial;
-
-   private Long idStatusPedido;
-
-   private Long idCliente;
-
-   private Long idUsuario;
-
-   private Long idMedida;
-
-   private LocalDate dataEntrega;
 
    private String tipoPedido;
 
-   private Double qtd;
+   private String nomeCliente;
+
+   private String numeroCliente;
+
+   private LocalDate dataEntrega;
 
    private Float valor;
+
+   private String descricao;
+
+   private Double alturaCava;
+
+   private Double busto;
+
+   private Double cintura;
+
+   private Double quadril;
+
+   private Double comprimentoManga;
+
+   private Double largura;
+
+   private Double comprimentoSaia;
 
    public Pedido build() {
 
     return Pedido.builder()
         .tipoPedido(tipoPedido)
-        .qtd(qtd)
-        .valor(valor)
+        .nomeCliente(nomeCliente)
+        .numeroCliente(numeroCliente)
         .dataEntrega(dataEntrega)
+        .valor(valor)
+        .descricao(descricao)
+        .alturaCava(alturaCava)
+        .busto(busto)
+        .cintura(cintura)
+        .quadril(quadril)
+        .comprimentoManga(comprimentoManga)
+        .largura(largura)
+        .comprimentoSaia(comprimentoSaia)
         .build();
 }
 }
