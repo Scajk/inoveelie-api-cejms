@@ -2,11 +2,6 @@ package br.com.ifpe.inoveelie.modelo.pedido;
 
 import java.time.LocalDate;
 import org.hibernate.annotations.SQLRestriction;
-import br.com.ifpe.inoveelie.modelo.material.Material;
-import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
-import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
-import br.com.ifpe.inoveelie.modelo.medida.Medida;
-import br.com.ifpe.inoveelie.modelo.statusPedido.StatusPedido;
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido;
 
 @Entity
 @Table(name = "Pedido")
@@ -30,30 +26,42 @@ import lombok.Setter;
 public class Pedido extends EntidadeAuditavel{
     
    @ManyToOne
-   private Cliente clientes;
-
-   @ManyToOne
-   private Usuario usuarios;
-
-   @ManyToOne
-   private Material materiais;
-
-   @ManyToOne
-   private Medida medidas;
-
-   @ManyToOne
-   private StatusPedido statusPedidos;
+   private TipoPedido tipo;
 
    @Column
-   private Double qtd;
+   private String nomeCliente;
+
+   @Column
+   private String numeroCliente;
 
    @Column
    private LocalDate dataEntrega;
 
    @Column
-   private String tipoPedido;
+   private Float valor;
 
    @Column
-   private Float valor;
+   private String descricao;
+
+   @Column
+   private Double alturaCava;
+
+   @Column
+   private Double busto;
+
+   @Column
+   private Double cintura;
+
+   @Column
+   private Double quadril;
+
+   @Column
+   private Double comprimentoManga;
+
+   @Column
+   private Double largura;
+
+   @Column
+   private Double comprimentoSaia;
 
 }

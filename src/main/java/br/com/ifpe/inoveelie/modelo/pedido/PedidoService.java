@@ -26,12 +26,19 @@ public class PedidoService {
     public void update(Long id, Pedido pedidoAlterado) {
  
        Pedido pedido = repository.findById(id).get();
-       pedido.setClientes(pedidoAlterado.getClientes());
-       pedido.setStatusPedidos(pedidoAlterado.getStatusPedidos());
-       pedido.setUsuarios(pedidoAlterado.getUsuarios());
-       pedido.setMedidas(pedidoAlterado.getMedidas());
+       pedido.setTipo(pedidoAlterado.getTipo());
+       pedido.setNomeCliente(pedidoAlterado.getNomeCliente());
+       pedido.setNumeroCliente(pedidoAlterado.getNumeroCliente());
        pedido.setDataEntrega(pedidoAlterado.getDataEntrega());
-       pedido.setTipoPedido(pedidoAlterado.getTipoPedido());
+       pedido.setValor(pedidoAlterado.getValor());
+       pedido.setDescricao(pedidoAlterado.getDescricao());
+       pedido.setAlturaCava(pedidoAlterado.getAlturaCava());
+       pedido.setBusto(pedidoAlterado.getBusto());
+       pedido.setCintura(pedidoAlterado.getCintura());
+       pedido.setQuadril(pedidoAlterado.getQuadril());
+       pedido.setComprimentoManga(pedidoAlterado.getComprimentoManga());
+       pedido.setLargura(pedidoAlterado.getLargura());
+       pedido.setComprimentoSaia(pedidoAlterado.getComprimentoSaia());
          
        pedido.setVersao(pedido.getVersao() + 1);
        repository.save(pedido);

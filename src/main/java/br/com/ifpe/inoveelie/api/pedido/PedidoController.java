@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.ifpe.inoveelie.modelo.material.MaterialService;
 import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import br.com.ifpe.inoveelie.modelo.pedido.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedidoService;
 
 @RestController
 @RequestMapping("/api/pedido")
@@ -30,7 +29,7 @@ public class PedidoController {
    private PedidoService pedidoService;
 
    @Autowired
-   private MaterialService materialService;
+   private TipoPedidoService tipoPedidoService;
 
    @Operation(
        summary = "Serviço responsável por salvar um pedido no sistema.",
@@ -41,7 +40,7 @@ public class PedidoController {
    PedidoRequest request) {
 
        Pedido pedidoNovo = request.build();
-       pedidoNovo.setMateriais(materialService.obterPorID(request.getIdMaterial()));
+       pedidoNovo.setTipo(tipoPedidoService.obterPorID(request.getIdTipo()));
 
        Pedido pedido = pedidoService.save(pedidoNovo);
        return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
@@ -73,7 +72,7 @@ public class PedidoController {
    public ResponseEntity<Pedido> update(@PathVariable("id") Long id, @RequestBody PedidoRequest request) {
 
        Pedido pedido = request.build();
-       pedido.setMateriais(materialService.obterPorID(request.getIdMaterial()));
+       pedido.setTipo(tipoPedidoService.obterPorID(request.getIdTipo()));
        pedidoService.update(id, pedido);
       
        return ResponseEntity.ok().build();

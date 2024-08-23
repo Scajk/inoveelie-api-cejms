@@ -1,6 +1,9 @@
 package br.com.ifpe.inoveelie.api.pedido;
 
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,32 +16,49 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class PedidoRequest {
-    
-   private Long idMaterial;
 
-   private Long idStatusPedido;
+   private Long idTipo;
 
-   private Long idCliente;
+   private String nomeCliente;
 
-   private Long idUsuario;
+   private String numeroCliente;
 
-   private Long idMedida;
-
+   @JsonFormat(pattern = "dd/MM/yyyy")
    private LocalDate dataEntrega;
 
-   private String tipoPedido;
-
-   private Double qtd;
-
    private Float valor;
+
+   private String descricao;
+
+   private Double alturaCava;
+
+   private Double busto;
+
+   private Double cintura;
+
+   private Double quadril;
+
+   private Double comprimentoManga;
+
+   private Double largura;
+
+   private Double comprimentoSaia;
 
    public Pedido build() {
 
     return Pedido.builder()
-        .tipoPedido(tipoPedido)
-        .qtd(qtd)
-        .valor(valor)
+        .nomeCliente(nomeCliente)
+        .numeroCliente(numeroCliente)
         .dataEntrega(dataEntrega)
+        .valor(valor)
+        .descricao(descricao)
+        .alturaCava(alturaCava)
+        .busto(busto)
+        .cintura(cintura)
+        .quadril(quadril)
+        .comprimentoManga(comprimentoManga)
+        .largura(largura)
+        .comprimentoSaia(comprimentoSaia)
         .build();
 }
 }
