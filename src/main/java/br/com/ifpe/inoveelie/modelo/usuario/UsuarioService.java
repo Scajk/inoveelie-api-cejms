@@ -27,9 +27,6 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
-    
-    /* @Autowired
-    private UsuarioRepository usuarioRepository; */
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -61,14 +58,20 @@ public class UsuarioService implements UserDetailsService {
 
         // 2. Codificação da Senha
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setConfirmaPassword(passwordEncoder.encode(usuario.getConfirmaPassword()));
 
-        // 3. Preparação para Ativação
-        String activationCode = UUID.randomUUID().toString();
+        // 3. Preparação para Ativação, METODO ESTAVEL ORIGINAL
+        /* String activationCode = UUID.randomUUID().toString();
         usuario.setCodigoAtivacao(activationCode);
-        usuario.setAtivo(false); // Definindo a conta como inativa até a ativação
+        usuario.setAtivo(false); */ // Definindo a conta como inativa até a ativação
+
+        // 3.1 Preparação para Ativação, com código numérico de 6 dígitos
+        String activationCode = generateActivationCode();
+        usuario.setCodigoAtivacao(activationCode);
+        usuario.setAtivo(false);
 
         // 4. Configurações Padrão
-        usuario.setHabilitado(Boolean.TRUE);
+        usuario.setHabilitado(Boolean.TRUE);//ctrl + clique em setHabilitado
         usuario.setVersao(1L);
         usuario.setDataCriacao(LocalDate.now());
 
@@ -79,6 +82,12 @@ public class UsuarioService implements UserDetailsService {
         emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
 
         return usuarioSalvo;
+    }
+
+    private String generateActivationCode() {
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+        return String.valueOf(code);
     }
 
     /*
@@ -127,8 +136,9 @@ public class UsuarioService implements UserDetailsService {
              Usuario usuario = usuarioOpt.get();
  
              // Verifica se o código de ativação coincide
-             if (usuario.getCodigoAtivacao().equals(activationCode)) {
+             if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
                  usuario.setAtivo(true);
+                 //usuario.setHabilitado(Boolean.TRUE); possibilidade se ativo != habilitado error
                  usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
                  repository.save(usuario);
                  return true;
@@ -237,11 +247,7 @@ public class UsuarioService implements UserDetailsService {
         return savedUsuario;
     } */
 
-    private String generateActivationCode() {
-        Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
-        return String.valueOf(code);
-    }
+    
 
     
     /* public boolean activateUser(String email, String activationCode) {
