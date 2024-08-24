@@ -32,6 +32,10 @@ public class AuthenticationController {
     
         Usuario authenticatedUser = userService.authenticate(data.getUsername(), data.getPassword());
 
+        if (!authenticatedUser.isAtivo()) {
+            throw new RuntimeException("Usuário não ativado. Verifique seu e-mail para ativar sua conta.");
+        }
+
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
         Map<Object, Object> loginResponse = new HashMap<>();

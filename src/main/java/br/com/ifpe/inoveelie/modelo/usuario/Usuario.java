@@ -67,6 +67,7 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
 
     //private boolean isActive; // Novo campo para verificar se a conta está ativada
 
+    @Column(nullable = false)
     private boolean ativo;
 
     private String activationCode;
@@ -84,6 +85,14 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
     @Override
