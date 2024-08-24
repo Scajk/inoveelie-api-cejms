@@ -41,6 +41,8 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/usuario/ativar").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuario/recuperar-senha").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuario/redefinir-senha").permitAll()
 
                 .requestMatchers(HttpMethod.GET, "/api-docs/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
