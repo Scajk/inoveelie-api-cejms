@@ -14,6 +14,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
+import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -78,6 +79,20 @@ public class EmailService {
         params.setVariable("codigo", activationCode);
 
         this.sendMailTemplate("codigo_ativacao.html", usuario.getEmail(), assuntoEmail, params);
+    }
+
+    public void enviarComprovante(Pedido pedido) {
+
+        String assuntoEmail = "Oba!! Aqui está mais um comprovante de pedidos.";
+
+        Usuario usuario = pedido.getUsuarios();
+
+        Context params = new Context();
+        params.setVariable("pedido", pedido);
+        params.setVariable("usuario", usuario);
+        ;
+
+        this.sendMailTemplate("comprovante.html", usuario.getEmail(), assuntoEmail, params);
     }
 
     @Async

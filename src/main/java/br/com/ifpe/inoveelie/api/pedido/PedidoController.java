@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.ifpe.inoveelie.modelo.material.MaterialService;
+import br.com.ifpe.inoveelie.modelo.mensagens.EmailService;
 import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import br.com.ifpe.inoveelie.modelo.pedido.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,9 @@ import jakarta.validation.Valid;
 @CrossOrigin
 
 public class PedidoController {
+    
+    @Autowired
+    private EmailService emailService;
     
    @Autowired
    private PedidoService pedidoService;
@@ -88,5 +92,10 @@ public class PedidoController {
 
        pedidoService.delete(id);
        return ResponseEntity.ok().build();
+   }
+
+   @PostMapping("/enviar-comprovante")
+   public void enviarComprovante(@RequestBody Pedido pedido) {
+       emailService.enviarComprovante(pedido);
    }
 }

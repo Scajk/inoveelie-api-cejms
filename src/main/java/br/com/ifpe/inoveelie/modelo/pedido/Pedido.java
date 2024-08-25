@@ -2,12 +2,15 @@ package br.com.ifpe.inoveelie.modelo.pedido;
 
 import java.time.LocalDate;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import br.com.ifpe.inoveelie.modelo.material.Material;
 import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import br.com.ifpe.inoveelie.modelo.medida.Medida;
 import br.com.ifpe.inoveelie.modelo.statusPedido.StatusPedido;
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
+import br.com.ifpe.inoveelie.modelo.mensagens.EmailService;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -28,6 +31,9 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class Pedido extends EntidadeAuditavel{
+
+   @Autowired
+    private EmailService emailService;
     
    @ManyToOne
    private Cliente clientes;
