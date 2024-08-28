@@ -17,7 +17,6 @@ public class MaterialRequest {
    private String nome;
    private String descricao;
    private String quantidade;
-   private String img;
 
    public Material build() {
 
@@ -26,7 +25,6 @@ public class MaterialRequest {
         .nome(nome)
         .descricao(descricao)
         .quantidade(quantidade)
-        .img(img)
         .build();
 }
 }

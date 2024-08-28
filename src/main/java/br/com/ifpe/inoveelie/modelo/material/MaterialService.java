@@ -32,7 +32,6 @@ public class MaterialService {
        material.setNome(materialAlterado.getNome());
        material.setDescricao(materialAlterado.getDescricao());
        material.setQuantidade(materialAlterado.getQuantidade());
-       material.setImg(materialAlterado.getImg());
          
        material.setVersao(material.getVersao() + 1);
        repository.save(material);
