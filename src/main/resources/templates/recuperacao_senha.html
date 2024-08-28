@@ -42,12 +42,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Bem-vindo, <span th:text="${usuario.nome} ?: ''"></span>!</h1>
+            <h1>Bem-vindo, <span th:text="${usuario.nome}"></span>!</h1>
         </div>
         <div class="content">
             <p>Olá <span th:text="${usuario.nome} ?: ''"></span>,</p>
             
-            <p>Seu código de recuperação de senha é: <strong><span th:text="${usuario.resetToken} ?: ''"></span></strong></p>
+            <p>Seu código de recuperação de senha é: <strong><span th:text="${usuario.resetToken}"></span></strong></p>
             <p>Para prosseguir com a recuperação, por favor clique no link abaixo:</p>
             <p><a href="http://localhost:3000/Codigo-Recup">Recuperar senha</a></p>
             <p>Se você não criou esta conta, por favor, ignore este email.</p>

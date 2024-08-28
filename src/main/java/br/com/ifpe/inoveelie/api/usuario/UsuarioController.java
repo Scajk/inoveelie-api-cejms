@@ -85,10 +85,15 @@ public class UsuarioController {
     }
 
     @PostMapping("/recuperar-senha")
-    public ResponseEntity<Void> iniciarRecuperacaoSenha(@RequestParam String email) {
-        usuarioService.iniciarRecuperacaoSenha(email);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Usuario> iniciarRecuperacaoSenha(@RequestParam String email) {
+    Usuario usuario = usuarioService.iniciarRecuperacaoSenha(email);
+    
+    if (usuario != null) {
+        return ResponseEntity.ok(usuario);  // Retorna o usuário com o token gerado
+    } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  // Retorna erro se o usuário não for encontrado
     }
+}
 
     @PostMapping("/redefinir-senha")
     public ResponseEntity<Void> redefinirSenha(@RequestParam String email, @RequestParam String token, @RequestParam String novaSenha) {
@@ -96,12 +101,7 @@ public class UsuarioController {
         return senhaRedefinida ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<<          EMPRESA          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // <<<<<<<<<<<<    EMPRESA    >>>>>>>>>>>>>>>
 
     @PostMapping("/empresa/{usuarioId}")
    public ResponseEntity<Empresa> adicionarEmpresa(@PathVariable("usuarioId") Long empresaId, @RequestBody @Valid EmpresaRequest request) {

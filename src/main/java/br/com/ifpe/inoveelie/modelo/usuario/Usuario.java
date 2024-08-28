@@ -65,8 +65,6 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
     @Column(name = "codigo_ativacao")
     private String codigoAtivacao;
 
-    //private boolean isActive; // Novo campo para verificar se a conta está ativada
-
     @Column(nullable = false)
     private boolean ativo;
 
