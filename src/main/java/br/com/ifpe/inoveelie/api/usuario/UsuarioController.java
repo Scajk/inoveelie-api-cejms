@@ -59,16 +59,33 @@ public class UsuarioController {
         return usuarioService.obterPorID(id);
     }
 
+    @GetMapping("getUsuario/{username}")
+    public Usuario obterPorUsername(@PathVariable String username) {
+
+        return usuarioService.obterPorUsername(username);
+    }
+
     @Operation(
         summary = "Serviço responsável por alterar um cliente no sistema."
     )
-    @PutMapping("/{id}")
+    @PostMapping("/update/{id}")
+   public Usuario update(
+           @PathVariable("id") Long id,
+           @RequestParam(value = "nome", required = false) String nome,
+           @RequestParam(value = "sobrenome", required = false) String sobrenome) {
+
+       return usuarioService.update( id, nome, sobrenome);
+   }
+
+
+
+   /* @PutMapping("/{id}")
     public ResponseEntity<Usuario> update(@PathVariable("id") Long id, 
             @RequestBody @Valid UsuarioRequest request) {
 
         usuarioService.update(id, request.build());
         return ResponseEntity.ok().build();
-    }
+    } */
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

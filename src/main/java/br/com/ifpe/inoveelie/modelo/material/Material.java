@@ -1,8 +1,6 @@
 package br.com.ifpe.inoveelie.modelo.material;
 
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.DialectOverride.ColumnDefault;
-
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,8 +33,5 @@ public class Material extends EntidadeAuditavel{
 
     @Column (length = 32)
     private String quantidade;
-
-    @Column
-    private String img;
 
 }

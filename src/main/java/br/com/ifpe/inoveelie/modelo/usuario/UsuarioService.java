@@ -161,12 +161,32 @@ public class UsuarioService implements UserDetailsService {
         return repository.findById(id).get();
     }
 
+    public Usuario obterPorUsername(String username) {
+
+        return repository.findByUsername(username).get();
+    }
+
+    @Transactional
+    public Usuario update(Long id, String nome, String sobrenome) {
+
+        Usuario usuario = repository.findById(id).get();
+        usuario.setNome(nome);
+        usuario.setSobrenome(sobrenome);
+
+
+        usuario.setVersao(usuario.getVersao() + 1);
+        return repository.save(usuario);
+    }
+
     @Transactional
     public void update(Long id, Usuario usuarioAlterado) {
 
         Usuario usuario = repository.findById(id).get();
         usuario.setNome(usuarioAlterado.getNome());
         usuario.setSobrenome(usuarioAlterado.getSobrenome());
+        usuario.setEmail(usuarioAlterado.getEmail());
+        usuario.setPassword(usuarioAlterado.getPassword());
+        usuario.setConfirmaPassword(usuarioAlterado.getConfirmaPassword());
 
         usuario.setVersao(usuario.getVersao() + 1);
         repository.save(usuario);
