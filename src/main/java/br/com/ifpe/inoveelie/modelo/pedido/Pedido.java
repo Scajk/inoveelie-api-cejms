@@ -67,7 +67,7 @@ public class Pedido extends EntidadeAuditavel{
    @Column
    private Double comprimentoSaia;
 
-   @Column(nullable = false, unique = true)
+   @Column/* (nullable = false, unique = true) */
    private String email;
 
    private Long id;
