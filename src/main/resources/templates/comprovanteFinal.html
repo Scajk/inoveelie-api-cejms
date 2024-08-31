@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprovante do pedido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0066cc;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #0066cc;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #004999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Seu pedido <span th:text="${pedido.id}"></span> foi Concluído!</h1>
+        </div>
+        <div class="content">
+            <p>Cliente: <span th:text="${pedido.nomeCliente}"></span>,</p>
+            <p>Numero: <span th:text="${pedido.numeroCliente}"></span>,</p>
+            <p>Data de Recebimento: <span th:text="${pedido.dataEntrega}"></span>,</p>
+            <p></p>
+            
+           
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Inove Eliê, comprovante. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

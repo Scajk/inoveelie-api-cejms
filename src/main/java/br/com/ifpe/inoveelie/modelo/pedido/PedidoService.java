@@ -67,11 +67,19 @@ public class PedidoService {
 
     @Transactional
     public void delete(Long id) {
- 
-        Pedido pedido = repository.findById(id).get();
+
+    Pedido pedido = repository.findById(id).orElse(null);  
+    if (pedido != null) {
         pedido.setHabilitado(Boolean.FALSE);
         pedido.setVersao(pedido.getVersao() + 1);
- 
+
         repository.save(pedido);
+
+        emailService.enviarComprovanteFinal(pedido);
+
+        repository.delete(pedido);
+    } else {
+        System.out.println("Pedido não encontrado para o ID: " + id);
     }
+}
 }

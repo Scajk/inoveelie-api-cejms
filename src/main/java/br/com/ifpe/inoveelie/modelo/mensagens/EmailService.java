@@ -49,7 +49,7 @@ public class EmailService {
 
     public void enviarComprovante(Pedido pedido) {
 
-        String assuntoEmail = "Oba!! Aqui está mais um comprovante de pedidos.";
+        String assuntoEmail = "Oba!! Aqui está o comprovante do seu pedido.";
 
         Cliente cliente = pedido.getCliente();
 
@@ -59,6 +59,24 @@ public class EmailService {
         ;
 
         this.sendMailTemplate("comprovante.html", cliente.getEmail(), assuntoEmail, params);
+    }
+
+    public void enviarComprovanteFinal(Pedido pedido) {
+
+        String assuntoEmail = "Oba!! Seu pedido foi finalizado.";
+    
+        Cliente cliente = pedido.getCliente();  
+    
+        if (cliente != null && cliente.getEmail() != null) {  
+            Context params = new Context();
+            params.setVariable("pedido", pedido);
+            params.setVariable("cliente", cliente);
+    
+            
+            this.sendMailTemplate("comprovanteFinal.html", cliente.getEmail(), assuntoEmail, params);
+        } else {
+            System.out.println("Cliente ou e-mail não encontrado para o pedido.");
+        }
     }
 
 
