@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import br.com.ifpe.inoveelie.modelo.mensagens.EmailService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -13,13 +15,22 @@ public class PedidoService {
    @Autowired
    private PedidoRepository repository;
 
+   @Autowired
+    private EmailService emailService;
+
    @Transactional
    public Pedido save(Pedido pedido) {
 
        pedido.setHabilitado(Boolean.TRUE);
        pedido.setVersao(1L);
        pedido.setDataCriacao(LocalDate.now());
-       return repository.save(pedido);
+       
+       Pedido pedidoCriado = repository.save(pedido);
+
+       // 1. Envio de Comporvante
+       emailService.enviarComprovante(pedidoCriado);
+
+       return pedidoCriado;
    }
 
     @Transactional

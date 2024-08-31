@@ -1,7 +1,11 @@
 package br.com.ifpe.inoveelie.modelo.pedido;
 
 import java.time.LocalDate;
+
 import org.hibernate.annotations.SQLRestriction;
+
+import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
+import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido;
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +16,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido;
 
 @Entity
 @Table(name = "Pedido")
@@ -63,5 +66,23 @@ public class Pedido extends EntidadeAuditavel{
 
    @Column
    private Double comprimentoSaia;
+
+   @Column(nullable = false, unique = true)
+   private String email;
+
+   private Long id;
+   private Cliente cliente;
+
+   private LocalDate dataCriacao;
+   private Boolean habilitado;
+   private Long versao;
+
+   public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
 }

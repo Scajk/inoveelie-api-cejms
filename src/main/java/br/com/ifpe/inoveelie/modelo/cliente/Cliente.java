@@ -27,4 +27,14 @@ public class Cliente extends EntidadeAuditavel{
 
    @Column
    private String numeroCliente;
+
+   private String email;
+
+   public String getEmail() {
+      return email;
+  }
+
+  public void setEmail(String email) {
+      this.email = email;
+  }
 }

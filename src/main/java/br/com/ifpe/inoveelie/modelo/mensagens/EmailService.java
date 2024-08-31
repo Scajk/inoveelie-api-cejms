@@ -2,8 +2,8 @@ package br.com.ifpe.inoveelie.modelo.mensagens;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +13,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
+import br.com.ifpe.inoveelie.modelo.cliente.Cliente;
+import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -44,13 +47,20 @@ public class EmailService {
 
     private JavaMailSender emailSender;
 
-    public void enviarEmailTeste() {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("santoscaio2002@gmail.com");
-        message.setSubject("Teste de Envio de E-mail");
-        message.setText("Este é um e-mail de teste.");
-        emailSender.send(message);
+    public void enviarComprovante(Pedido pedido) {
+
+        String assuntoEmail = "Oba!! Aqui está mais um comprovante de pedidos.";
+
+        Cliente cliente = pedido.getCliente();
+
+        Context params = new Context();
+        params.setVariable("pedido", pedido);
+        params.setVariable("cliente", cliente);
+        ;
+
+        this.sendMailTemplate("comprovante.html", cliente.getEmail(), assuntoEmail, params);
     }
+
 
     public void enviarEmailConfirmacaoCadastroUsuario(Usuario usuario) {
 
