@@ -16,7 +16,7 @@ public class MaterialRequest {
    private Integer idLogin;
    private String nome;
    private String descricao;
-   private String quantidade;
+   private Integer quantidade;
 
    public Material build() {
 

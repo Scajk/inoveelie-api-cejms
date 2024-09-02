@@ -31,7 +31,7 @@ public class Material extends EntidadeAuditavel{
     @Column (length = 255)
     private String descricao;
 
-    @Column (length = 32)
-    private String quantidade;
+    @Column
+    private Integer quantidade;
 
 }

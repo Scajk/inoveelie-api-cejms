@@ -57,4 +57,18 @@ public class MaterialService {
 
        repository.save(material);
    }
+
+   @Transactional
+    public void subtrairQuantidade(Long id, Integer valor) {
+        Material material = repository.findById(id).orElseThrow(() -> new RuntimeException("Material não encontrado"));
+        if (valor <= 0) {
+            throw new IllegalArgumentException("O valor a ser subtraído deve ser maior que zero.");
+        }
+        if (material.getQuantidade() < valor) {
+            throw new IllegalArgumentException("A quantidade a ser subtraída é maior que a quantidade disponível.");
+        }
+        material.setQuantidade(material.getQuantidade() - valor);
+        material.setVersao(material.getVersao() + 1);
+        repository.save(material);
+    }
 }

@@ -8,11 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.ifpe.inoveelie.modelo.material.Material;
 import br.com.ifpe.inoveelie.modelo.material.MaterialService;
@@ -58,4 +60,9 @@ public class MaterialController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{id}/subtrair")
+    public ResponseEntity<Void> subtrairQuantidade(@PathVariable Long id, @RequestParam Integer valor) {
+        materialService.subtrairQuantidade(id, valor);
+        return ResponseEntity.ok().build();
+    }
 }
