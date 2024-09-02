@@ -31,8 +31,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Operation(
-        summary = "Serviço responsável por salvar um usuario no sistema.",
-        description = "Exemplo de descrição de um endpoint responsável por inserir um usuario no sistema."
+        summary = "Serviço responsável por salvar um usuario no sistema."
     )
     @PostMapping
     public ResponseEntity<Usuario> save(@RequestBody @Valid UsuarioRequest request) {
@@ -42,8 +41,7 @@ public class UsuarioController {
     }
 
     @Operation(
-        summary = "Serviço responsável por listar todos os usuario do sistema.",
-        description = "Exemplo de descrição de um endpoint responsável por inserir um usuario no sistema."
+        summary = "Serviço responsável por listar todos os usuario do sistema."
     )
     @GetMapping
     public List<Usuario> listarTodos() {
@@ -71,30 +69,60 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-
-        usuarioService.delete(id);
-        return ResponseEntity.ok().build();
+    @Operation(
+        summary = "Serviço responsável por gerar código de exclusão de usuario no sistema.",
+        description = "Gera código de 6 dígitos para exclusão e envia por email."
+    )
+    @PostMapping("/iniciar-exclusao-conta")
+    public ResponseEntity<Usuario> iniciarExclusaoConta(@RequestParam String email) {
+        Usuario usuario = usuarioService.iniciarExclusaoConta(email);
+        
+        if (usuario != null) {
+            return ResponseEntity.ok(usuario);  
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  
+        }
     }
 
+    @Operation(
+        summary = "Serviço responsável por verificar código de exclusaõ e excluir conta do usuário no sistema.",
+        description = "Excluir conta apenas em caso de confirmação do código."
+    )
+    @DeleteMapping("/confirmar-exclusao-conta")
+    public ResponseEntity<Void> confirmarExclusaoConta(@RequestParam String email, @RequestParam String token) {
+        boolean contaExcluida = usuarioService.confirmarExclusaoConta(email, token);
+        return contaExcluida ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @Operation(
+        summary = "Serviço responsável por ativar um usuario no sistema.",
+        description = "Serviço vital para o usuário acessar o sistema."
+    )
     @PostMapping("/ativar")
     public ResponseEntity<Void> ativarConta(@RequestParam String email, @RequestParam String codigoAtivacao) {
         boolean ativado = usuarioService.activateUser(email, codigoAtivacao);
         return ativado ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    @Operation(
+        summary = "Serviço responsável por recuperar senha do usuario no sistema.",
+        description = "Gerar token de recuperação e enviar por email."
+    )
     @PostMapping("/recuperar-senha")
     public ResponseEntity<Usuario> iniciarRecuperacaoSenha(@RequestParam String email) {
     Usuario usuario = usuarioService.iniciarRecuperacaoSenha(email);
     
     if (usuario != null) {
-        return ResponseEntity.ok(usuario);  // Retorna o usuário com o token gerado
+        return ResponseEntity.ok(usuario);  
     } else {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  // Retorna erro se o usuário não for encontrado
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  
     }
-}
+    }
 
+    @Operation(
+        summary = "Serviço responsável por alterar a senha de um usuario no sistema.",
+        description = "executado mediante a confirmação de token enviado por email."
+    )
     @PostMapping("/redefinir-senha")
     public ResponseEntity<Void> redefinirSenha(@RequestParam String email, @RequestParam String token, @RequestParam String novaSenha) {
         boolean senhaRedefinida = usuarioService.redefinirSenha(email, token, novaSenha);
@@ -103,6 +131,9 @@ public class UsuarioController {
 
     // <<<<<<<<<<<<    EMPRESA    >>>>>>>>>>>>>>>
 
+    @Operation(
+        summary = "Serviço responsável por salvar empresa de usuario no sistema."
+    )
     @PostMapping("/empresa/{usuarioId}")
    public ResponseEntity<Empresa> adicionarEmpresa(@PathVariable("usuarioId") Long empresaId, @RequestBody @Valid EmpresaRequest request) {
 
@@ -110,13 +141,19 @@ public class UsuarioController {
        return new ResponseEntity<Empresa>(usuario, HttpStatus.CREATED);
    }
 
+   @Operation(
+        summary = "Serviço responsável por alterar dados da empresa de um usuario no sistema."
+    )
    @PutMapping("/empresa/{usuarioId}")
    public ResponseEntity<Empresa> atualizarEmpresa(@PathVariable("usuarioId") Long usuarioId, @RequestBody EmpresaRequest request) {
 
     Empresa usuario = usuarioService.atualizarEmpresa(usuarioId, request.build());
        return new ResponseEntity<Empresa>(usuario, HttpStatus.OK);
    }
-  
+
+   @Operation(
+        summary = "Serviço responsável por apagar a empresa de um usuario no sistema."
+    )
    @DeleteMapping("/empresa/{usuarioId}")
    public ResponseEntity<Void> removerEnderecoCliente(@PathVariable("usuarioId") Long usuarioId) {
 

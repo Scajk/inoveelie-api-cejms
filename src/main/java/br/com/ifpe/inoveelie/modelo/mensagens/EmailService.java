@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -46,14 +45,6 @@ public class EmailService {
 
     private JavaMailSender emailSender;
 
-    public void enviarEmailTeste() {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("santoscaio2002@gmail.com");
-        message.setSubject("Teste de Envio de E-mail");
-        message.setText("Este é um e-mail de teste.");
-        emailSender.send(message);
-    }
-
     public void enviarEmailConfirmacaoCadastroUsuario(Usuario usuario) {
 
         String assuntoEmail = "Bem vindo ao nosso aplicativo";
@@ -80,6 +71,17 @@ public class EmailService {
         params.setVariable("codigo", activationCode);
 
         this.sendMailTemplate("codigo_ativacao.html", usuario.getEmail(), assuntoEmail, params);
+    }
+
+    @Async
+    public void enviarEmailExclusaoConta(Usuario usuario) {
+        String assuntoEmail = "Código para Exclusão de Conta";
+
+        Context params = new Context();
+        params.setVariable("usuario", usuario);
+        params.setVariable("codigo", usuario.getDeleteToken());
+
+        this.sendMailTemplate("apagarConta.html", usuario.getEmail(), assuntoEmail, params);
     }
 
     @Async

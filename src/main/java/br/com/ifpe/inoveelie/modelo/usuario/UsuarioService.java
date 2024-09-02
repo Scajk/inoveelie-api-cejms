@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -74,14 +73,14 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuarioSalvo = repository.save(usuario);
 
         // 6. Envio de E-mail de Ativação
-        //emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
+        emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
 
         return usuarioSalvo;
     }
 
     private String generateActivationCode() {
         Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+        int code = 100000 + random.nextInt(900000); 
         return String.valueOf(code);
     }
 
@@ -92,10 +91,9 @@ public class UsuarioService implements UserDetailsService {
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 
-            // Verifica se o código de ativação coincide
             if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
                 usuario.setAtivo(true);
-                usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
+                usuario.setCodigoAtivacao(null); 
                 repository.save(usuario);
                 return true;
             }
@@ -106,27 +104,26 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional
     public Usuario iniciarRecuperacaoSenha(String email) {
-    Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
 
-    if (usuarioOpt.isPresent()) {
-        Usuario usuario = usuarioOpt.get();
-        String resetToken = generateRecupationCode();
-        usuario.setResetToken(resetToken);
-        repository.save(usuario);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String resetToken = generateRecupationCode();
+            usuario.setResetToken(resetToken);
+            repository.save(usuario);
 
-        // Envia email com o token de redefinição
-        //emailService.enviarEmailRecuperacaoSenha(usuario);
+            emailService.enviarEmailRecuperacaoSenha(usuario);
 
-        return usuario;  
-    }
-    
-    return null;  
-    
+            return usuario;
+        }
+
+        return null;
+
     }
 
     private String generateRecupationCode() {
         Random random = new Random();
-        int codeRec = 100000 + random.nextInt(900000); 
+        int codeRec = 100000 + random.nextInt(900000);
         return String.valueOf(codeRec);
     }
 
@@ -138,11 +135,10 @@ public class UsuarioService implements UserDetailsService {
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 
-            // Verifica se o token coincide
             if (usuario.getResetToken() != null && usuario.getResetToken().equals(token)) {
                 usuario.setPassword(novaSenha);
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-                usuario.setResetToken(null); // Remove o token após uso
+                usuario.setResetToken(null); 
                 repository.save(usuario);
                 return true;
             }
@@ -173,18 +169,47 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public Usuario iniciarExclusaoConta(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
 
-        Usuario usuario = repository.findById(id).get();
-        usuario.setHabilitado(Boolean.FALSE);
-        usuario.setVersao(usuario.getVersao() + 1);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String deleteToken = generateDeletionCode();
+            usuario.setDeleteToken(deleteToken);
+            repository.save(usuario);
 
-        repository.delete(usuario);
+            emailService.enviarEmailExclusaoConta(usuario);
+
+            return usuario;
+        }
+
+        return null;
     }
 
+    private String generateDeletionCode() {
+        Random random = new Random();
+        int codeDel = 100000 + random.nextInt(900000);
+        return String.valueOf(codeDel);
+    }
+
+    @Transactional
+    public boolean confirmarExclusaoConta(String email, String token) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+
+            
+            if (usuario.getDeleteToken() != null && usuario.getDeleteToken().equals(token)) {
+                repository.delete(usuario); 
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
-    
 
     @Transactional
     public Empresa adicionarEmpresa(Long usuarioId, Empresa empresas) {
