@@ -60,31 +60,29 @@ public class PedidoController {
        description = "Endpoint responsável por obter um pedido no sistema."
    )
    @GetMapping("/{id}")
-    public Pedido obterPorID(@PathVariable Long id) {
-        return pedidoService.obterPorID(id);
-   }
+    public ResponseEntity<Pedido> obterPorID(@PathVariable Long id) {
+        Pedido pedido = pedidoService.obterPorID(id);
+        return ResponseEntity.ok(pedido);
+    }
 
    @Operation(
        summary = "Serviço responsável por alterar um pedido no sistema.",
        description = "Endpoint responsável por alterar um pedido no sistema."
    )
    @PutMapping("/{id}")
-   public ResponseEntity<Pedido> update(@PathVariable("id") Long id, @RequestBody PedidoRequest request) {
-
-       Pedido pedido = request.build();
-       pedido.setTipo(tipoPedidoService.obterPorID(request.getIdTipo()));
-       pedidoService.update(id, pedido);
-      
-       return ResponseEntity.ok().build();
-   }
+    public ResponseEntity<Void> update(@PathVariable("id") Long id, @RequestBody PedidoRequest request) {
+        Pedido pedido = request.build();
+        pedido.setTipo(tipoPedidoService.obterPorID(request.getIdTipo()));
+        pedidoService.update(id, pedido);
+        return ResponseEntity.ok().build();
+    }
 
    @Operation(
        summary = "Serviço responsável por apagar um pedido no sistema.",
        description = "Endpoint responsável por apagar um pedido no sistema."
    )
-     @DeleteMapping("/{id}")
+   @DeleteMapping("/{id}")
    public ResponseEntity<Void> delete(@PathVariable Long id) {
-
        pedidoService.delete(id);
        return ResponseEntity.ok().build();
    }
