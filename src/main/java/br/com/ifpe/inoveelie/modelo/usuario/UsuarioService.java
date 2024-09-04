@@ -74,7 +74,7 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuarioSalvo = repository.save(usuario);
 
         // 6. Envio de E-mail de Ativação
-        //emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
+        emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
 
         return usuarioSalvo;
     }

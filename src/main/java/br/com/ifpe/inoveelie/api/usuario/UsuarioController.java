@@ -89,8 +89,8 @@ public class UsuarioController {
         summary = "Serviço responsável por gerar código de exclusão de usuario no sistema.",
         description = "Gera código de 6 dígitos para exclusão e envia por email."
     )
-    @PostMapping("/iniciar-exclusao-conta")
-    public ResponseEntity<Usuario> iniciarExclusaoConta(@RequestParam String email) {
+    @PostMapping("/iniciar-exclusao-conta/{email}")
+    public ResponseEntity<Usuario> iniciarExclusaoConta(@PathVariable("email") String email) {
         Usuario usuario = usuarioService.iniciarExclusaoConta(email);
         
         if (usuario != null) {
@@ -104,7 +104,7 @@ public class UsuarioController {
         summary = "Serviço responsável por verificar código de exclusaõ e excluir conta do usuário no sistema.",
         description = "Excluir conta apenas em caso de confirmação do código."
     )
-    @DeleteMapping("/confirmar-exclusao-conta")
+    @PostMapping("/confirmar-exclusao-conta")
     public ResponseEntity<Void> confirmarExclusaoConta(@RequestParam String email, @RequestParam String token) {
         boolean contaExcluida = usuarioService.confirmarExclusaoConta(email, token);
         return contaExcluida ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
