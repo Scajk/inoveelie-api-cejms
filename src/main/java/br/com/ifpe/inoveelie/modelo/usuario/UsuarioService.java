@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,18 +59,13 @@ public class UsuarioService implements UserDetailsService {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setConfirmaPassword(passwordEncoder.encode(usuario.getConfirmaPassword()));
 
-        // 3. Preparação para Ativação, METODO ESTAVEL ORIGINAL
-        /* String activationCode = UUID.randomUUID().toString();
-        usuario.setCodigoAtivacao(activationCode);
-        usuario.setAtivo(false); */ // Definindo a conta como inativa até a ativação
-
         // 3.1 Preparação para Ativação, com código numérico de 6 dígitos
         String activationCode = generateActivationCode();
         usuario.setCodigoAtivacao(activationCode);
         usuario.setAtivo(false);
 
         // 4. Configurações Padrão
-        usuario.setHabilitado(Boolean.TRUE);//ctrl + clique em setHabilitado
+        usuario.setHabilitado(Boolean.TRUE);// ctrl + clique em setHabilitado
         usuario.setVersao(1L);
         usuario.setDataCriacao(LocalDate.now());
 
@@ -86,82 +80,51 @@ public class UsuarioService implements UserDetailsService {
 
     private String generateActivationCode() {
         Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+        int code = 100000 + random.nextInt(900000); 
         return String.valueOf(code);
     }
 
-    /*
-     * @Transactional
-     * public Usuario save(Usuario usuario) {
-     * if (!usuario.getPassword().equals(usuario.getConfirmaPassword())) {
-     * throw new
-     * SenhasNaoConferemException("A senha e a confirmação de senha não são idênticas."
-     * );
-     * }
-     * 
-     * usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-     * usuario.setHabilitado(Boolean.TRUE);
-     * usuario.setVersao(1L);
-     * usuario.setDataCriacao(LocalDate.now());
-     * Usuario usuarioSalvo = repository.save(usuario);
-     * 
-     * emailService.enviarEmailConfirmacaoCadastroUsuario(usuario);
-     * 
-     * return usuarioSalvo;
-     * }
-     */
-
-    /*
-     * @Transactional
-     * public Usuario save(Usuario usuario) {
-     * // Geração do código de ativação
-     * String activationCode = UUID.randomUUID().toString();
-     * usuario.setCodigoAtivacao(activationCode);
-     * 
-     * // Salvar o usuário com o código de ativação
-     * Usuario savedUser = repository.save(usuario);
-     * 
-     * // Enviar email de ativação
-     * emailService.enviarEmailConfirmacaoCadastroUsuario(savedUser);
-     * 
-     * return savedUser;
-     * }
-     */
-
-     @Transactional
-     public boolean activateUser(String email, String activationCode) {
-         Optional<Usuario> usuarioOpt = repository.findByEmail(email);
- 
-         if (usuarioOpt.isPresent()) {
-             Usuario usuario = usuarioOpt.get();
- 
-             // Verifica se o código de ativação coincide
-             if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
-                 usuario.setAtivo(true);
-                 //usuario.setHabilitado(Boolean.TRUE); possibilidade se ativo != habilitado error
-                 usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
-                 repository.save(usuario);
-                 return true;
-             }
-         }
- 
-         return false;
-     }
-
-    // Método para iniciar o processo de recuperação de senha
     @Transactional
-    public void iniciarRecuperacaoSenha(String email) {
+    public boolean activateUser(String email, String activationCode) {
         Optional<Usuario> usuarioOpt = repository.findByEmail(email);
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            String resetToken = UUID.randomUUID().toString();
+
+            if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
+                usuario.setAtivo(true);
+                usuario.setCodigoAtivacao(null); 
+                repository.save(usuario);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public Usuario iniciarRecuperacaoSenha(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String resetToken = generateRecupationCode();
             usuario.setResetToken(resetToken);
             repository.save(usuario);
 
-            // Envia email com o token de redefinição
             emailService.enviarEmailRecuperacaoSenha(usuario);
+
+            return usuario;
         }
+
+        return null;
+
+    }
+
+    private String generateRecupationCode() {
+        Random random = new Random();
+        int codeRec = 100000 + random.nextInt(900000);
+        return String.valueOf(codeRec);
     }
 
     // Método para redefinir a senha usando o token
@@ -172,10 +135,10 @@ public class UsuarioService implements UserDetailsService {
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 
-            // Verifica se o token coincide
             if (usuario.getResetToken() != null && usuario.getResetToken().equals(token)) {
                 usuario.setPassword(novaSenha);
-                usuario.setResetToken(null); // Remove o token após uso
+                usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                usuario.setResetToken(null); 
                 repository.save(usuario);
                 return true;
             }
@@ -183,86 +146,6 @@ public class UsuarioService implements UserDetailsService {
 
         return false;
     }
-
-    /*
-     * //<<<<<<<<<<<<<<<<<<<<<<<<< SOLICTAR RECUPERAÇÃO DE SENHA
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * //<<<<<<<<<<<<<<<<<<<<<<<<< SOLICTAR RECUPERAÇÃO DE SENHA
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * //<<<<<<<<<<<<<<<<<<<<<<<<< SOLICTAR RECUPERAÇÃO DE SENHA
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * 
-     * public void solicitarRecuperacaoSenha(String email) {
-     * Usuario usuario = usuarioRepository.findByUsername(email)
-     * .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-     * 
-     * String resetCode = generateResetCode(); // Método que gera o código de
-     * recuperação
-     * usuario.setPasswordResetCode(resetCode);
-     * usuarioRepository.save(usuario);
-     * 
-     * emailService.enviarEmailRecuperacaoSenha(usuario, resetCode); // Implementar
-     * este método no EmailService
-     * }
-     * 
-     * private String generateResetCode() {
-     * Random random = new Random();
-     * int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
-     * return String.valueOf(code);
-     * }
-     * 
-     * //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REDEFINIR SENHA
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REDEFINIR SENHA
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REDEFINIR SENHA
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * 
-     * @Transactional
-     * public void redefinirSenha(String email, String resetCode, String novaSenha)
-     * {
-     * Usuario usuario = usuarioRepository.findByUsername(email)
-     * .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-     * 
-     * if (usuario.getPasswordResetCode().equals(resetCode)) {
-     * usuario.setPassword(passwordEncoder.encode(novaSenha));
-     * usuario.setPasswordResetCode(null); // Limpa o código de recuperação
-     * usuarioRepository.save(usuario);
-     * } else {
-     * throw new RuntimeException("Código de recuperação inválido");
-     * }
-     * }
-     */
-
-    /* public Usuario save(Usuario usuario, boolean ativo) {
-        // Gera um código de ativação
-        String activationCode = generateActivationCode();
-        usuario.setActivationCode(activationCode);
-        usuario.setActive(false); // Conta não ativada inicialmente
-        Usuario savedUsuario = repository.save(usuario);
-
-        // Envia o e-mail com o código de ativação
-        emailService.enviarEmailCodigoAtivacao(usuario, activationCode);
-
-        return savedUsuario;
-    } */
-
-    
-
-    
-    /* public boolean activateUser(String email, String activationCode) {
-     Usuario usuario = usuarioRepository.findByUsername(email)
-     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-     
-     if (usuario.getActivationCode().equals(activationCode)) {
-     usuario.setActive(true);
-     usuario.setActivationCode(null); // Limpa o código de ativação
-     usuarioRepository.save(usuario);
-     return true;
-     }
-     return false;
-    } */
-    
 
     public List<Usuario> listarTodos() {
 
@@ -306,25 +189,47 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public Usuario iniciarExclusaoConta(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
 
-        Usuario usuario = repository.findById(id).get();
-        usuario.setHabilitado(Boolean.FALSE);
-        usuario.setVersao(usuario.getVersao() + 1);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String deleteToken = generateDeletionCode();
+            usuario.setDeleteToken(deleteToken);
+            repository.save(usuario);
 
-        repository.delete(usuario);
+            emailService.enviarEmailExclusaoConta(usuario);
+
+            return usuario;
+        }
+
+        return null;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
-    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
-    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
-    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // <<<<<<<<<<<<<<<<<<<<< EMPRESA
-    //////////////////////////////////////////////////////////////////////////////////////////////////////// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private String generateDeletionCode() {
+        Random random = new Random();
+        int codeDel = 100000 + random.nextInt(900000);
+        return String.valueOf(codeDel);
+    }
+
+    @Transactional
+    public boolean confirmarExclusaoConta(String email, String token) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+
+            
+            if (usuario.getDeleteToken() != null && usuario.getDeleteToken().equals(token)) {
+                repository.delete(usuario); 
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
 
     @Transactional
     public Empresa adicionarEmpresa(Long usuarioId, Empresa empresas) {

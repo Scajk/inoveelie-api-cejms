@@ -8,6 +8,6 @@ services:
       POSTGRES_PASSWORD: inoveelie
       POSTGRES_DB: inoveelie
     ports:
-      - 5435:5432
+      - 5437:5432
     volumes:
       - ./postgres-data:/bitnami/postgresql/data

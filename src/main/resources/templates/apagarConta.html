@@ -42,15 +42,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Bem-vindo, <span th:text="${usuario.nome}"></span>!</h1>
+            <h1>Ficamos tristes com a sua partida, <span th:text="${usuario.nome}"></span>!</h1>
         </div>
         <div class="content">
             <p>Olá <span th:text="${usuario.nome} ?: ''"></span>,</p>
             
-            <p>Seu código de recuperação de senha é: <strong><span th:text="${usuario.resetToken}"></span></strong></p>
-            <p>Para prosseguir com a recuperação, por favor clique no link abaixo:</p>
-            <p><a href="http://localhost:3000/Codigo-Recup">Recuperar senha</a></p>
-            <p>Se você não criou esta conta, por favor, ignore este email.</p>
+            <p>Seu código de exclusão é: <strong><span th:text="${usuario.deleteToken}"></span></strong></p>
+            <p>Para prosseguir com a exclusão, por favor clique no link abaixo:</p>
+            <p><a href="http://localhost:3000/Confirmar-Exclusao">Excluir minha conta</a></p>
            
         </div>
         <div class="footer">
