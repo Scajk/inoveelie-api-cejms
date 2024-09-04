@@ -90,39 +90,6 @@ public class UsuarioService implements UserDetailsService {
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-<<<<<<< HEAD
-
-            // Verifica se o código de ativação coincide
-            if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
-                usuario.setAtivo(true);
-                usuario.setCodigoAtivacao(null); // Remove o código de ativação após uso
-                repository.save(usuario);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Transactional
-    public Usuario iniciarRecuperacaoSenha(String email) {
-    Optional<Usuario> usuarioOpt = repository.findByEmail(email);
-
-    if (usuarioOpt.isPresent()) {
-        Usuario usuario = usuarioOpt.get();
-        String resetToken = generateRecupationCode();
-        usuario.setResetToken(resetToken);
-        repository.save(usuario);
-
-        // Envia email com o token de redefinição
-        emailService.enviarEmailRecuperacaoSenha(usuario);
-
-        return usuario;  
-    }
-    
-    return null;  
-    
-=======
 
             if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
                 usuario.setAtivo(true);
@@ -152,16 +119,11 @@ public class UsuarioService implements UserDetailsService {
 
         return null;
 
->>>>>>> exclusao
     }
 
     private String generateRecupationCode() {
         Random random = new Random();
-<<<<<<< HEAD
-        int codeRec = 100000 + random.nextInt(900000); 
-=======
         int codeRec = 100000 + random.nextInt(900000);
->>>>>>> exclusao
         return String.valueOf(codeRec);
     }
 
@@ -176,11 +138,7 @@ public class UsuarioService implements UserDetailsService {
             if (usuario.getResetToken() != null && usuario.getResetToken().equals(token)) {
                 usuario.setPassword(novaSenha);
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-<<<<<<< HEAD
-                usuario.setResetToken(null); // Remove o token após uso
-=======
                 usuario.setResetToken(null); 
->>>>>>> exclusao
                 repository.save(usuario);
                 return true;
             }
@@ -248,11 +206,6 @@ public class UsuarioService implements UserDetailsService {
         return null;
     }
 
-<<<<<<< HEAD
-
-    // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
-    
-=======
     private String generateDeletionCode() {
         Random random = new Random();
         int codeDel = 100000 + random.nextInt(900000);
@@ -277,7 +230,6 @@ public class UsuarioService implements UserDetailsService {
     }
 
     // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>> exclusao
 
     @Transactional
     public Empresa adicionarEmpresa(Long usuarioId, Empresa empresas) {
