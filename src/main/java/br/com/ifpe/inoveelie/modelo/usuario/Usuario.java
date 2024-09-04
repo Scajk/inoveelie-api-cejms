@@ -72,6 +72,8 @@ public class Usuario extends EntidadeAuditavel implements UserDetails {
 
     private String resetToken;
 
+    private String deleteToken;
+
     @Column(unique = true)
     private String passwordResetCode;
 

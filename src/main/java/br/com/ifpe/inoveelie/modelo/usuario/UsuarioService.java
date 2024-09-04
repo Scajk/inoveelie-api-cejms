@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -81,7 +80,7 @@ public class UsuarioService implements UserDetailsService {
 
     private String generateActivationCode() {
         Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // Gera um código de 6 dígitos
+        int code = 100000 + random.nextInt(900000); 
         return String.valueOf(code);
     }
 
@@ -91,6 +90,7 @@ public class UsuarioService implements UserDetailsService {
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
+<<<<<<< HEAD
 
             // Verifica se o código de ativação coincide
             if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
@@ -122,11 +122,46 @@ public class UsuarioService implements UserDetailsService {
     
     return null;  
     
+=======
+
+            if (usuario.getCodigoAtivacao() != null && usuario.getCodigoAtivacao().equals(activationCode)) {
+                usuario.setAtivo(true);
+                usuario.setCodigoAtivacao(null); 
+                repository.save(usuario);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public Usuario iniciarRecuperacaoSenha(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String resetToken = generateRecupationCode();
+            usuario.setResetToken(resetToken);
+            repository.save(usuario);
+
+            emailService.enviarEmailRecuperacaoSenha(usuario);
+
+            return usuario;
+        }
+
+        return null;
+
+>>>>>>> exclusao
     }
 
     private String generateRecupationCode() {
         Random random = new Random();
+<<<<<<< HEAD
         int codeRec = 100000 + random.nextInt(900000); 
+=======
+        int codeRec = 100000 + random.nextInt(900000);
+>>>>>>> exclusao
         return String.valueOf(codeRec);
     }
 
@@ -138,11 +173,14 @@ public class UsuarioService implements UserDetailsService {
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 
-            // Verifica se o token coincide
             if (usuario.getResetToken() != null && usuario.getResetToken().equals(token)) {
                 usuario.setPassword(novaSenha);
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+<<<<<<< HEAD
                 usuario.setResetToken(null); // Remove o token após uso
+=======
+                usuario.setResetToken(null); 
+>>>>>>> exclusao
                 repository.save(usuario);
                 return true;
             }
@@ -193,18 +231,53 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public Usuario iniciarExclusaoConta(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
 
-        Usuario usuario = repository.findById(id).get();
-        usuario.setHabilitado(Boolean.FALSE);
-        usuario.setVersao(usuario.getVersao() + 1);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String deleteToken = generateDeletionCode();
+            usuario.setDeleteToken(deleteToken);
+            repository.save(usuario);
 
-        repository.delete(usuario);
+            emailService.enviarEmailExclusaoConta(usuario);
+
+            return usuario;
+        }
+
+        return null;
     }
 
+<<<<<<< HEAD
 
     // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
     
+=======
+    private String generateDeletionCode() {
+        Random random = new Random();
+        int codeDel = 100000 + random.nextInt(900000);
+        return String.valueOf(codeDel);
+    }
+
+    @Transactional
+    public boolean confirmarExclusaoConta(String email, String token) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+
+            
+            if (usuario.getDeleteToken() != null && usuario.getDeleteToken().equals(token)) {
+                repository.delete(usuario); 
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>> exclusao
 
     @Transactional
     public Empresa adicionarEmpresa(Long usuarioId, Empresa empresas) {
