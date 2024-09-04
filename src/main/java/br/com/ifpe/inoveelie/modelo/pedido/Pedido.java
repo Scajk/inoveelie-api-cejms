@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido;
+import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 
 @Entity
 @Table(name = "Pedido")
@@ -63,5 +64,8 @@ public class Pedido extends EntidadeAuditavel{
 
    @Column
    private Double comprimentoSaia;
+
+   @ManyToOne
+   private Usuario usuario;
 
 }

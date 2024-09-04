@@ -9,6 +9,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -73,7 +74,7 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuarioSalvo = repository.save(usuario);
 
         // 6. Envio de E-mail de Ativação
-        emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
+        //emailService.enviarEmailConfirmacaoCadastroUsuario(usuarioSalvo);
 
         return usuarioSalvo;
     }
@@ -227,6 +228,14 @@ public class UsuarioService implements UserDetailsService {
         }
 
         return false;
+    }
+
+    public Usuario obterUsuarioAtual() {
+    // Obtém o principal do contexto de segurança
+    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    
+    // Busca o usuário pelo username
+    return repository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
     // <<<<<<<<<<<<<<<<<<<<< EMPRESA >>>>>>>>>>>>>>>>>>>>>>>>
