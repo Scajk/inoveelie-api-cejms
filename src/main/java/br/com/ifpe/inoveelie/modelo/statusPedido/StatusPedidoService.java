@@ -1,12 +1,14 @@
 package br.com.ifpe.inoveelie.modelo.statusPedido;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
-import java.util.List;
 
 @Service
 public class StatusPedidoService {
@@ -16,6 +18,7 @@ public class StatusPedidoService {
 
     @PostConstruct
     public void init() {
+        createDefaultStatusIfNotExists("Concluído");
         createDefaultStatusIfNotExists("Em andamento");
         createDefaultStatusIfNotExists("Em aberto");
         createDefaultStatusIfNotExists("Cancelado");
@@ -46,6 +49,7 @@ public class StatusPedidoService {
     @Transactional
     public void update(Long id, StatusPedido statusPedidoAlterado) {
         StatusPedido statusPedido = repository.findById(id).get();
+        statusPedido.setConcluido(statusPedidoAlterado.getConcluido());
         statusPedido.setEmAndamento(statusPedidoAlterado.getEmAndamento());
         statusPedido.setCancelado(statusPedidoAlterado.getCancelado());
         statusPedido.setFinalizado(statusPedidoAlterado.getFinalizado());
