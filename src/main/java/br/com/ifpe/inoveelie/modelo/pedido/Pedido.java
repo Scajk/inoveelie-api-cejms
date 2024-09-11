@@ -23,9 +23,8 @@ import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class Pedido extends EntidadeAuditavel{
-    
+public class Pedido extends EntidadeAuditavel {
+   
    @ManyToOne
    private TipoPedido tipo;
 
@@ -68,4 +67,6 @@ public class Pedido extends EntidadeAuditavel{
    @ManyToOne
    private Usuario usuario;
 
+   @Column
+   private String status;
 }
