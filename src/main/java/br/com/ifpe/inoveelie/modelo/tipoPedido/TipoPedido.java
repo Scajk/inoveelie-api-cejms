@@ -1,6 +1,7 @@
 package br.com.ifpe.inoveelie.modelo.tipoPedido;
 
-import org.hibernate.annotations.SQLRestriction;
+import java.time.LocalDate;
+
 import br.com.ifpe.inoveelie.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,16 +14,23 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "TipoPedido")
-@SQLRestriction("habilitado = true")
-@Builder
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class TipoPedido extends EntidadeAuditavel {
-    
-   @Column
-   private String descricao;
+
+    @Column(nullable = false, unique = true)
+    private String descricao;
+
+    @Column(nullable = false)
+    private Boolean habilitado;
+
+    @Column(nullable = false)
+    private Long versao;
+
+    @Column(nullable = false)
+    private LocalDate dataCriacao;
 
 }

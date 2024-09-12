@@ -12,7 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido;
+import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido; // Atualizado para TipoPedido
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 
 @Entity

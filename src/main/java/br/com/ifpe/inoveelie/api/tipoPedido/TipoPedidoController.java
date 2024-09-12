@@ -20,47 +20,60 @@ import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("/api/tipoPedido")
 @CrossOrigin
-
 public class TipoPedidoController {
     
     @Autowired
     private TipoPedidoService tipoPedidoService;
  
     @Operation(
-        summary = "Serviço responsável por salvar uma categoria de produto no sistema.",
-        description = "Exemplo de descrição de um endpoint responsável por inserir uma categoria de produto no sistema."
+        summary = "Serviço responsável por salvar um tipo de pedido no sistema.",
+        description = "Este endpoint insere um novo tipo de pedido no sistema."
     )
     @PostMapping
     public ResponseEntity<TipoPedido> save(@RequestBody TipoPedidoRequest request) {
- 
         TipoPedido tipoPedidoNovo = request.build();
         TipoPedido tipoPedido = tipoPedidoService.save(tipoPedidoNovo);
-        return new ResponseEntity<TipoPedido>(tipoPedido, HttpStatus.CREATED);
-        
+        return new ResponseEntity<>(tipoPedido, HttpStatus.CREATED);
     }
  
+    @Operation(
+        summary = "Lista todos os tipos de pedido.",
+        description = "Este endpoint retorna uma lista de todos os tipos de pedido existentes no sistema."
+    )
     @GetMapping
-     public List<TipoPedido> listarTodos() {
-         return tipoPedidoService.listarTodos();
-     }
- 
-     @GetMapping("/{id}")
-     public TipoPedido obterPorID(@PathVariable Long id) {
-         return tipoPedidoService.obterPorID(id);
-     }
- 
-     @PutMapping("/{id}")
-     public ResponseEntity<TipoPedido> update(@PathVariable("id") Long id, @RequestBody TipoPedidoRequest request) {
- 
-         tipoPedidoService.update(id, request.build());
-         return ResponseEntity.ok().build();
-     }
- 
-     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
- 
-        tipoPedidoService.delete(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<TipoPedido>> listarTodos() {
+        List<TipoPedido> tiposPedido = tipoPedidoService.listarTodos();
+        return ResponseEntity.ok(tiposPedido);
     }
-
+ 
+    @Operation(
+        summary = "Obtém um tipo de pedido por ID.",
+        description = "Este endpoint retorna um tipo de pedido específico com base no ID fornecido."
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<TipoPedido> obterPorID(@PathVariable Long id) {
+        TipoPedido tipoPedido = tipoPedidoService.obterPorID(id);
+        return ResponseEntity.ok(tipoPedido);
+    }
+ 
+    @Operation(
+        summary = "Atualiza um tipo de pedido existente.",
+        description = "Este endpoint atualiza um tipo de pedido com base no ID fornecido e nos dados fornecidos no corpo da requisição."
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<TipoPedido> update(@PathVariable("id") Long id, @RequestBody TipoPedidoRequest request) {
+        TipoPedido tipoPedidoAtualizado = request.build();
+        tipoPedidoService.update(id, tipoPedidoAtualizado);
+        return ResponseEntity.ok(tipoPedidoAtualizado);
+    }
+ 
+    @Operation(
+        summary = "Desativa um tipo de pedido existente.",
+        description = "Este endpoint desativa um tipo de pedido com base no ID fornecido, em vez de excluí-lo fisicamente do banco de dados."
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        tipoPedidoService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

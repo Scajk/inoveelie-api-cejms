@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.inoveelie.modelo.pedido.Pedido;
 import br.com.ifpe.inoveelie.modelo.pedido.PedidoService;
+import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedido;
 import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -40,8 +41,14 @@ public class PedidoController {
     )
     @PostMapping
     public ResponseEntity<Pedido> save(@RequestBody @Valid PedidoRequest request) {
-        Pedido pedidoNovo = request.build();
-        pedidoNovo.setTipo(tipoPedidoService.obterPorID(request.getIdTipo()));
+        
+        TipoPedido tipoPedido = tipoPedidoService.obterPorID(request.getIdTipo());
+
+       
+        Pedido pedidoNovo = request.toPedido();
+        pedidoNovo.setTipo(tipoPedido); 
+        
+        
         Pedido pedido = pedidoService.save(pedidoNovo);
         return new ResponseEntity<>(pedido, HttpStatus.CREATED);
     }
@@ -71,9 +78,15 @@ public class PedidoController {
     )
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable("id") Long id, @RequestBody @Valid PedidoRequest request) {
-        Pedido pedido = request.build();
-        pedido.setTipo(tipoPedidoService.obterPorID(request.getIdTipo()));
-        pedidoService.update(id, pedido);
+        
+        TipoPedido tipoPedido = tipoPedidoService.obterPorID(request.getIdTipo());
+
+        
+        Pedido pedidoAtualizado = request.toPedido();
+        pedidoAtualizado.setTipo(tipoPedido); 
+        
+        
+        pedidoService.update(id, pedidoAtualizado);
         return ResponseEntity.ok().build();
     }
 

@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class PedidoRequest {
 
    private Long idTipo;
@@ -44,21 +43,20 @@ public class PedidoRequest {
 
    private Double comprimentoSaia;
 
-   public Pedido build() {
-
-    return Pedido.builder()
-        .nomeCliente(nomeCliente)
-        .numeroCliente(numeroCliente)
-        .dataEntrega(dataEntrega)
-        .valor(valor)
-        .descricao(descricao)
-        .alturaCava(alturaCava)
-        .busto(busto)
-        .cintura(cintura)
-        .quadril(quadril)
-        .comprimentoManga(comprimentoManga)
-        .largura(largura)
-        .comprimentoSaia(comprimentoSaia)
-        .build();
-}
+   public Pedido toPedido() {
+       return Pedido.builder()
+           .nomeCliente(nomeCliente)
+           .numeroCliente(numeroCliente)
+           .dataEntrega(dataEntrega)
+           .valor(valor)
+           .descricao(descricao)
+           .alturaCava(alturaCava)
+           .busto(busto)
+           .cintura(cintura)
+           .quadril(quadril)
+           .comprimentoManga(comprimentoManga)
+           .largura(largura)
+           .comprimentoSaia(comprimentoSaia)
+           .build();
+   }
 }

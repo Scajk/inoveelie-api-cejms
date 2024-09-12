@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import br.com.ifpe.inoveelie.modelo.tipoPedido.TipoPedidoService; // Importar TipoPedidoService
 import br.com.ifpe.inoveelie.modelo.usuario.Usuario;
 import br.com.ifpe.inoveelie.modelo.usuario.UsuarioService;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,9 @@ public class PedidoService {
    @Autowired
    private UsuarioService usuarioService;
 
+   @Autowired
+   private TipoPedidoService tipoPedidoService;
+
    @Transactional
    public Pedido save(Pedido pedido) {
        Usuario usuarioAtual = usuarioService.obterUsuarioAtual();
@@ -24,6 +28,13 @@ public class PedidoService {
        pedido.setHabilitado(Boolean.TRUE);
        pedido.setVersao(1L);
        pedido.setDataCriacao(LocalDate.now());
+
+
+       if (pedido.getTipo() != null) {
+
+           tipoPedidoService.obterPorID(pedido.getTipo().getId());
+       }
+
        return repository.save(pedido);
    }
 
@@ -36,7 +47,13 @@ public class PedidoService {
            throw new RuntimeException("Você não tem permissão para modificar este pedido.");
        }
 
-       pedido.setTipo(pedidoAlterado.getTipo());
+       
+       if (pedidoAlterado.getTipo() != null) {
+          
+           tipoPedidoService.obterPorID(pedidoAlterado.getTipo().getId());
+           pedido.setTipo(pedidoAlterado.getTipo());
+       }
+
        pedido.setNomeCliente(pedidoAlterado.getNomeCliente());
        pedido.setNumeroCliente(pedidoAlterado.getNumeroCliente());
        pedido.setDataEntrega(pedidoAlterado.getDataEntrega());
